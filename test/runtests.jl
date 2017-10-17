@@ -1,5 +1,24 @@
 using IcanProj
 using Base.Test
 
-# write your own tests here
-@test 1 == 2
+# Project tests
+
+
+
+
+
+
+
+
+# Project scripts
+
+include("metadata_script.jl")
+
+
+
+
+
+
+
+
+
