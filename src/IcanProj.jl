@@ -7,6 +7,7 @@ using NveData
 using Query
 using JLD2
 using FileIO
+using PyPlot
 
 
 # Global variables
@@ -21,6 +22,25 @@ export stat_sel
 export WatershedData, load_metadata, clean_metadata, get_watershed_data
 
 include("metadata.jl")
+
+
+# Prepare data for vic simulations
+
+
+
+
+
+
+
+
+
+
+# Plotting functions
+
+export analysis_elevation
+
+include("plots/analysis_elevation.jl")
+
 
 
 

@@ -11,6 +11,7 @@ struct WatershedData
     xrange::UnitRange{Int64}
     yrange::UnitRange{Int64}
     ind_senorge::Array{Int64,2}
+    ind_1km::Array{Int64,2}
     ind_5km::Array{Int64,2}
     ind_10km::Array{Int64,2}
     ind_25km::Array{Int64,2}
@@ -144,7 +145,8 @@ function get_watershed_data(df_sel)
 
         # Indices for different resolutions
 
-        ind_5km = resolution_ind(5)
+        ind_1km  = resolution_ind(1)
+        ind_5km  = resolution_ind(5)
         ind_10km = resolution_ind(10)
         ind_25km = resolution_ind(25)
         ind_50km = resolution_ind(50)
@@ -158,6 +160,7 @@ function get_watershed_data(df_sel)
             xrange,
             yrange,
             ind_senorge[xrange, yrange],
+            ind_1km,
             ind_5km,
             ind_10km,
             ind_25km,
