@@ -129,9 +129,27 @@ Link for information about the [soil parameter file](http://vic.readthedocs.io/e
 
 Link for information about the [vegetation parameter file](http://vic.readthedocs.io/en/vic.4.2.d/Documentation/VegParam/)
 
+1: gridcel - Identifier (jmg: clear what this should be)
+
+2: Nveg - Number of vegetation classes in a grid cell (jgm: irrelevant)
+
+3: veg_class - Identifier (jmg: clear what this should be)
+
+4: Cv - Fraction of area covered by a specific vegetation class (jmg: clear what this should be)
+
+5: root_depth1 - Root depth for first layer (jmg: ???)
+
+6: root_depth2 - Root depth for second layer (jmg: ???)
+
+7: root_frac1 - Fraction of roots for first layer (jmg: ???)
+
+8: root_frac2 - Fraction of roots for second layer (jmg: ???)
+
+9-10: lai - Monthly leaf area index values
 
 
 ## Vegetation library file
 
 Link for information about the [vegetation library file](http://vic.readthedocs.io/en/vic.4.2.d/Documentation/VegLib/)
 
+[Here](https://github.com/jmgnve/IcanProj.jl/blob/master/data/veglib_param_example) is an example of a vegetation library file.
