@@ -69,7 +69,7 @@ function average_soilparams(soil_param, wsh_single, resolution)
         
     end
 
-    #param_tmp[:, 2] .= floor.(param_tmp[:, 2])
+    param_tmp[:, 2] .= floor.(param_tmp[:, 2])
     
     df_final = DataFrame(param_tmp)
     names!(df_final, names(soil_param))

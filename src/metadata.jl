@@ -80,7 +80,7 @@ Collect metadata for selected watershed.
 """
 function get_watershed_data(df_sel)
 
-    # Grid cells with input data
+    # Get digital elevation data
 
     file = joinpath(Pkg.dir("NveData"), "raw/elevation.asc")
     
@@ -88,17 +88,31 @@ function get_watershed_data(df_sel)
 
     elev = dem["data"]
     
-    valid_cells = similar(elev, Bool)
-    valid_cells[dem["data"] .== -9999.0] = false
-    valid_cells[dem["data"] .> 0.0] = true
-
-    # Senorge information
+    # Get information about senorge extent
 
     ind_senorge, xcoord, ycoord = senorge_info()
+
+    # Get information about gridcells with valid input data
+
+    tmp = readdlm(Pkg.dir("IcanProj", "data", "InnenforNorge_20170516.txt"), ';'; header=true)
+
+    has_metdata = convert.(Int64, tmp[1][:,2]) + 1
+
+    valid_cells = fill(false, size(elev))
+    valid_cells = similar(elev, Bool)    
+    valid_cells[findin(ind_senorge, has_metdata)] = true
 
     # Catchment information
     
     dbk_ind = read_dbk_ind()
+
+    # Indices for different resolutions
+
+    ind_1km  = resolution_ind(1)
+    ind_5km  = resolution_ind(5)
+    ind_10km = resolution_ind(10)
+    ind_25km = resolution_ind(25)
+    ind_50km = resolution_ind(50)
 
     # Loop over stations
 
@@ -139,48 +153,43 @@ function get_watershed_data(df_sel)
             end
     
         end
-    
-        println("Number valid cells for $(row[:regine_main]): $(sum(valid_cells[xrange, yrange]))")
-        println("Percentage glacier for $(row[:regine_main]): $(round(row[:perc_glacier],2))")
 
-        # Indices for different resolutions
+        println("Number valid cells for $(name)/$(regine_main): $(sum(valid_cells[xrange, yrange]))")
+        println("Percentage glacier for $(name)/$(regine_main): $(round(row[:perc_glacier], 2))")
 
-        ind_1km  = resolution_ind(1)
-        ind_5km  = resolution_ind(5)
-        ind_10km = resolution_ind(10)
-        ind_25km = resolution_ind(25)
-        ind_50km = resolution_ind(50)
+        # Save data if enough input data is available
         
-        # Save to struct
+        if sum(valid_cells[xrange, yrange]) == 2500
 
-        wsh_tmp = WatershedData(
-            name,
-            regine_main,
-            dbk,
-            xrange,
-            yrange,
-            ind_senorge[xrange, yrange],
-            ind_1km,
-            ind_5km,
-            ind_10km,
-            ind_25km,
-            ind_50km,
-            elev[xrange, yrange]
-        )
+            println("Saved $(name)/$(regine_main)")
+            
+            wsh_tmp = WatershedData(
+                name,
+                regine_main,
+                dbk,
+                xrange,
+                yrange,
+                ind_senorge[xrange, yrange],
+                ind_1km,
+                ind_5km,
+                ind_10km,
+                ind_25km,
+                ind_50km,
+                elev[xrange, yrange]
+            )
 
-        push!(wsh_info, wsh_tmp)
+            push!(wsh_info, wsh_tmp)
+
+        else
+
+            println("Skipped $(name)/$(regine_main): not enough input data")
+
+        end
         
     end
 
     return wsh_info
 
 end
-
-
-
-
-
-
-
 
 

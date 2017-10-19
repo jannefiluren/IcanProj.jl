@@ -22,9 +22,11 @@ wsh_info = get_watershed_data(df_sel)
 # Run some basic tests on wsh_info
 
 for wsh_single in wsh_info
+
+    @show wsh_single.name
     
-    @test all(wsh_single.elev .> 0)
-    @test all(wsh_single.elev .< 3000)
+    @test all(wsh_single.elev .>= 0)
+    @test all(wsh_single.elev .<= 3000)
     @test size(wsh_single.ind_senorge) == (50, 50)
 
 end

@@ -10,7 +10,7 @@ using Base.Test
 
 # Project scripts
 
-#include("metadata_script.jl")
+include("metadata_script.jl")
 
 
 

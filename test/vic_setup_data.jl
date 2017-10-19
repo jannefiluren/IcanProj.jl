@@ -10,7 +10,7 @@ using JLD2
 opt = Dict()
 
 opt["base_folder"] = "/data02/Ican/vic_sim/past_1km"
-opt["target_folder"] = "/data02/Ican/vic_sim/past_jan"
+opt["target_folder"] = "/data02/Ican/vic_sim/jan_past"
 
 opt["startyear"] = 1982
 opt["endyear"] = 2012
@@ -36,6 +36,13 @@ veg_param = read_veg_param(opt["base_folder"])
 
 ###################################################################################
 
+# Clear target folder
+
+rm(opt["target_folder"], force = true, recursive = true)
+
+
+###################################################################################
+
 # Loop over selected watersheds
 
 for wsh_single in wsh_info
@@ -46,7 +53,7 @@ for wsh_single in wsh_info
 
         try
 
-            println("Processing $(wsh_single.name) for resolution $(string(res)[5:end])")
+            info("Processing $(wsh_single.name) for resolution $(string(res)[5:end])")
 
             # Folder names
 
@@ -68,13 +75,27 @@ for wsh_single in wsh_info
 
             # Write global parameter file
 
-            write_global_param(path_sim,
-                               path_sim,
-                               opt["startyear"],
-                               opt["endyear"],
-                               opt["timestep"],
-                               opt["output_force"],
-                               opt["full_energy"])
+            if res == :ind_1km
+
+                write_global_param(path_sim,
+                                   opt["base_folder"],
+                                   opt["startyear"],
+                                   opt["endyear"],
+                                   opt["timestep"],
+                                   opt["output_force"],
+                                   opt["full_energy"])
+
+            else
+
+                write_global_param(path_sim,
+                                   path_sim,
+                                   opt["startyear"],
+                                   opt["endyear"],
+                                   opt["timestep"],
+                                   opt["output_force"],
+                                   opt["full_energy"])
+
+            end
 
             # Write vegetation library file
 
@@ -97,7 +118,11 @@ for wsh_single in wsh_info
 
             # Write model forcing data
 
-            average_forcings(opt["base_folder"], path_sim, soil_param, wsh_single, res)
+            if res != :ind_1km
+
+                average_forcings(opt["base_folder"], path_sim, soil_param, wsh_single, res)
+
+            end
 
         catch
 
