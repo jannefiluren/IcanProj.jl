@@ -7,17 +7,7 @@ using JLD2
 
 # Settings
 
-opt = Dict()
-
-opt["base_folder"] = "/data02/Ican/vic_sim/past_1km"
-opt["target_folder"] = "/data02/Ican/vic_sim/jan_past_new"
-
-opt["startyear"] = 1982
-opt["endyear"] = 2012
-opt["timestep"] = 3
-opt["output_force"] = "FALSE"
-opt["full_energy"] = "TRUE"
-opt["output_binary"] = "TRUE"
+opt = get_options()
 
 
 ###################################################################################

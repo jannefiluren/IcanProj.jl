@@ -3,9 +3,11 @@ using DataFrames
 using JLD2
 using Base.Test
 
+opt = get_options()
+
 info("Load metadata from excel table stations_metadata.xlsx")
 
-df_sel = load_metadata(stat_sel)
+df_sel = load_metadata(opt["stat_sel"])
 
 info("Clean the metadata table and save to stat_selected.csv")
 

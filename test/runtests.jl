@@ -21,7 +21,7 @@ using Base.Test
 
 ##########################################################################
 
-# Code for tranforming vic raw output files into useable format
+# Code for tranforming vic raw output files into usable format
 
 # 1. Average vic output and store in dataframes
 
@@ -40,7 +40,7 @@ using Base.Test
 
 # Plotting scripts
 
-include("plots_script.jl")
+#include("plots_script.jl")
 
 
 
