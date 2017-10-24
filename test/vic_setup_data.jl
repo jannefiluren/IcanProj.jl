@@ -10,13 +10,14 @@ using JLD2
 opt = Dict()
 
 opt["base_folder"] = "/data02/Ican/vic_sim/past_1km"
-opt["target_folder"] = "/data02/Ican/vic_sim/jan_past"
+opt["target_folder"] = "/data02/Ican/vic_sim/jan_past_new"
 
 opt["startyear"] = 1982
 opt["endyear"] = 2012
 opt["timestep"] = 3
 opt["output_force"] = "FALSE"
 opt["full_energy"] = "TRUE"
+opt["output_binary"] = "TRUE"
 
 
 ###################################################################################
@@ -83,7 +84,8 @@ for wsh_single in wsh_info
                                    opt["endyear"],
                                    opt["timestep"],
                                    opt["output_force"],
-                                   opt["full_energy"])
+                                   opt["full_energy"],
+                                   opt["output_binary"])
 
             else
 
@@ -93,7 +95,8 @@ for wsh_single in wsh_info
                                    opt["endyear"],
                                    opt["timestep"],
                                    opt["output_force"],
-                                   opt["full_energy"])
+                                   opt["full_energy"],
+                                   opt["output_binary"])
 
             end
 

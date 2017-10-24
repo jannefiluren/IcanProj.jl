@@ -4,49 +4,46 @@ using DataFrames
 using IcanProj
 
 
-# Set paths
+"""
+Summaries results from vic into single tables.
+"""
+function summaries_results(watersheds, resolutions)
 
-path_sim = "/data02/Ican/vic_sim/jan_past/"
+    for watershed in watersheds
 
-path_eval = "/data02/Ican/vic_sim/jan_eval/"
+        for resolution in resolutions
 
+            # Read results in simulation directory
 
-# Loop through directories
+            path = joinpath(path_sim, watershed, resolution, "results")
+            
+            df_res = read_all_results(path)
 
-watersheds = readdir(path_sim)
+            # Save results to evaluation directory
 
-for watershed in watersheds
+            path = joinpath(path_eval, watershed)
 
-    resolutions = readdir(joinpath(path_sim, watershed))
+            mkpath(path)
 
-    for resolution in resolutions
+            writetable(joinpath(path, "res_$(resolution).csv"), df_res)
 
-        
-        @show resolution
+            @save joinpath(path, "res_$(resolution).jld2") df_res watershed resolution
 
-
-        # Read results in simulation directory
-
-        path = joinpath(path_sim, watershed, resolution, "results")
-
-        df_snow = read_all_snow(path)
-
-        df_fluxes = read_all_fluxes(path)
-
-        # Save results to evaluation directory
-
-        path = joinpath(path_eval, watershed)
-
-        mkpath(path)
-
-        writetable(joinpath(path, "snow_$(resolution).csv"), df_snow)
-
-        writetable(joinpath(path, "fluxes_$(resolution).csv"), df_fluxes)
-
-        @save joinpath(path, "snow_$(resolution).jld2") df_snow watershed resolution
-
-        @save joinpath(path, "fluxes_$(resolution).jld2") df_fluxes watershed resolution
+        end
 
     end
 
 end
+
+
+# Process data
+
+path_sim = "/data02/Ican/vic_sim/jan_past_new/"
+
+path_eval = "/data02/Ican/vic_sim/jan_eval_new/"
+
+watersheds = readdir(path_sim)
+
+resolutions = ["5km", "10km", "25km", "50km"]  #readdir(joinpath(path_sim, watershed))
+
+summaries_results(watersheds, resolutions)

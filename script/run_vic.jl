@@ -1,12 +1,12 @@
 # Run vic for all watersheds and resolutions
 
-path_sim = "/data02/Ican/vic_sim/jan_past"
+path_sim = "/data02/Ican/vic_sim/jan_past_new"
 
 wsh_names = readdir(path_sim)
 
 for wsh_name in wsh_names
 
-    resolutions = readdir(joinpath(path_sim, wsh_name))
+    resolutions = ["1km"]  #["5km", "10km", "25km", "50km"]
 
     for resolution in resolutions
 

@@ -8,11 +8,12 @@ using Query
 using JLD2
 using FileIO
 using PyPlot
+using ProgressMeter
 
 
 # Global variables
 
-const stat_sel = ["191.2", "122.11"]  #, "2.32", "2.279", "224.1", "2.142", "12.70", "62.5", "22.4"]
+const stat_sel = ["191.2", "122.11", "2.32", "2.279", "224.1", "2.142", "12.70", "62.5", "22.4"]
 
 export stat_sel
 
@@ -32,7 +33,7 @@ export read_soil_params, read_veg_param
 
 export read_vic_forcing, read_mtclim
 
-export read_fluxes, read_all_fluxes, read_snow, read_all_snow
+export read_fluxes, read_all_fluxes, read_snow, read_all_snow, read_results, read_all_results
 
 include("vic_io.jl")
 

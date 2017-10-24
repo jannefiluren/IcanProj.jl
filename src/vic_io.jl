@@ -4,7 +4,11 @@ using DataFrames
 """
 Write global parameter file.
 """
-function write_global_param(path_sim, path_forcing, startyear, endyear, timestep, output_force, full_energy)
+function write_global_param(path_sim, path_forcing, startyear, endyear, timestep, output_force, full_energy, output_binary)
+
+    # Set output binary true if output force is true
+
+    output_binary = output_force == "TRUE" ? "TRUE" : output_binary
 
     # Standard parameter part
 
@@ -179,7 +183,7 @@ function write_global_param(path_sim, path_forcing, startyear, endyear, timestep
     OUT_STEP        0       # Output interval (hours); if 0, OUT_STEP = TIME_STEP
     SKIPYEAR 	0	# Number of years of output to omit from the output files
     COMPRESS	FALSE	# TRUE = compress input and output files when done
-    BINARY_OUTPUT $output_force	# TRUE = binary output files
+    BINARY_OUTPUT $output_binary	# TRUE = binary output files
     ALMA_OUTPUT	FALSE	# TRUE = ALMA-format output files; FALSE = standard VIC units
     MOISTFRACT 	FALSE	# TRUE = output soil moisture as volumetric fraction; FALSE = standard VIC units
     PRT_HEADER	FALSE   # TRUE = insert a header at the beginning of each output file; FALSE = no header
@@ -273,13 +277,54 @@ function write_global_param(path_sim, path_forcing, startyear, endyear, timestep
     OUTVAR		OUT_QAIR	* OUT_TYPE_USINT	100000
     OUTVAR		OUT_VP		* OUT_TYPE_USINT	100
     OUTVAR		OUT_WIND	* OUT_TYPE_USINT	100
+    
     """
 
-    if output_force == "FALSE"
+    # Write results as binary output
+
+    str_results = """
+   
+    N_OUTFILES    1
+
+    N_OUTFILES    1
+
+    OUTFILE       results        20 
+
+    OUTVAR      OUT_PREC	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_EVAP	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_RUNOFF	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_BASEFLOW	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_WDEW	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_NET_SHORT	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_R_NET	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_LATENT	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_EVAP_CANOP	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_TRANSP_VEG	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_EVAP_BARE	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SUB_CANOP	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SUB_SNOW	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_REL_HUMID	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_IN_LONG	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_WIND	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SWE	            * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SNOW_DEPTH	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SNOW_CANOPY	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SNOW_COVER	    * OUT_TYPE_DOUBLE		*
+
+
+    """
+    
+    # Concatenate standard parameters with mtclim output
+
+    if output_force == "FALSE" && output_binary == "FALSE" 
         str = str_standard
+    elseif output_force == "FALSE" && output_binary == "TRUE"
+        str = str_standard * str_results
     elseif output_force == "TRUE"
         str = str_standard * str_mtclim
     end
+
+    # Write the global parameters to file
 
     fid = open(joinpath(path_sim, "params/global_param"), "w")
 
@@ -401,8 +446,10 @@ function write_soil_params(path_sim, df)
 end
 
 
+
+
 """
-Read flux files.
+Read flux files (ascii outputs).
 """
 function read_fluxes(path_sim, file)
     
@@ -484,7 +531,7 @@ end
 
 
 """
-Read snow files.
+Read snow files (ascii outputs).
 """
 function read_snow(path_sim, file)
 
@@ -547,6 +594,36 @@ function read_snow(path_sim, file)
     return df
     
 end
+
+
+"""
+Read vic results (binary outputs).
+"""
+function read_results(path, file, ntime, ndata)
+
+    fid = open(joinpath(path, file), "r")
+
+    time_array = Int32[]
+    data_array = Float64[]
+
+    while !eof(fid)
+
+        for i in 1:ntime
+            push!(time_array, read(fid, Int32))
+        end
+        
+        for i in 1:ndata
+            push!(data_array, read(fid, Float64))
+        end
+        
+    end
+
+    close(fid)
+
+    return time_array, data_array
+
+end
+
 
 
 """
@@ -764,7 +841,7 @@ end
 
 
 """
-Read all snow files in a directory.
+Read all snow files in a directory (ascii files).
 """
 function read_all_snow(path)
 
@@ -797,7 +874,7 @@ end
 
 
 """
-Read all flux files in a directory.
+Read all flux files in a directory (ascii files).
 """
 function read_all_fluxes(path)
 
@@ -827,3 +904,66 @@ function read_all_fluxes(path)
     return df
 
 end
+
+
+# path = "/data02/Ican/vic_sim/jan_past_new/2.32/25km/results"
+
+# file = "results_61.81269_9.74909"
+
+
+
+
+"""
+Read all result files in a directory (binary files).
+"""
+function read_all_results(path)
+
+    info("Processing data in folder: $(path)")
+
+    # Data info
+
+    colnames = [:prec, :evap, :runoff, :baseflow, :wdew, :net_short, :r_net,
+                :latent, :evap_canop, :transp_veg, :evap_bare, :sub_canop,
+                :sub_snow, :rel_humid, :in_long, :wind, :swe, :snow_depth,
+                :snow_canopy, :snow_cover]
+
+    # Number of time and data columns in results files
+
+    ntime = 4
+
+    ndata = length(colnames)
+    
+    # Read files
+
+    files = readdir(path)
+
+    time, data = read_results(path, files[1], ntime, ndata)
+
+    data = data / length(files)
+    
+    @showprogress 1 "Processing..." for i in 2:length(files)
+        time_tmp, data_tmp = read_results(path, files[i], ntime, ndata)
+        data += data_tmp / length(files)
+    end
+
+    # Reshape vectors
+
+    time = reshape(time, ntime, :)'
+    data = reshape(data, ndata, :)'
+
+    # Create data frame
+
+    df = DataFrame(data)
+
+    names!(df, colnames)
+
+    df[:time] = DateTime.(time[:,1], time[:,2], time[:,3], time[:,4])
+
+    return df
+
+end
+
+
+
+
+
