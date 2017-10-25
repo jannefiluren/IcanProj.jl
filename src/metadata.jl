@@ -10,7 +10,7 @@ struct WatershedData
     dbk::Float64
     xrange::UnitRange{Int64}
     yrange::UnitRange{Int64}
-    ind_senorge::Array{Int64,2}
+    gridcel::Array{Int64,2}
     ind_1km::Array{Int64,2}
     ind_5km::Array{Int64,2}
     ind_10km::Array{Int64,2}
@@ -169,7 +169,7 @@ function get_watershed_data(df_sel)
                 dbk,
                 xrange,
                 yrange,
-                ind_senorge[xrange, yrange],
+                ind_senorge[xrange, yrange] - 1,
                 ind_1km,
                 ind_5km,
                 ind_10km,

@@ -5,11 +5,11 @@ Average forcing data.
 function average_forcings(base_folder, target_folder, soil_param, wsh_single, resolution)
 
     iboxes = getfield(wsh_single, resolution)
-    ind_senorge = getfield(wsh_single, :ind_senorge)
+    gridcel = getfield(wsh_single, :gridcel)
 
     for ibox in unique(iboxes)
 
-        isel = findin(soil_param[:gridcel], ind_senorge[iboxes .== ibox])
+        isel = findin(soil_param[:gridcel], gridcel[iboxes .== ibox])
 
         ncells = length(isel)
 
@@ -55,13 +55,13 @@ function average_soilparams(soil_param, wsh_single, resolution)
     param_all = convert(Array{Float64,2}, soil_param)
 
     iboxes = getfield(wsh_single, resolution)
-    ind_senorge = getfield(wsh_single, :ind_senorge)
+    gridcel = getfield(wsh_single, :gridcel)
 
     param_tmp = zeros(length(unique(iboxes)), size(param_all, 2))
     
     for ibox in unique(iboxes)
 
-        isel = findin(param_all[:, 2], ind_senorge[iboxes .== ibox])
+        isel = findin(param_all[:, 2], gridcel[iboxes .== ibox])
 
         for icol in 1:size(param_all, 2)
             param_tmp[ibox, icol] = mean(param_all[isel, icol])
@@ -91,13 +91,13 @@ function average_vegparams(veg_param, wsh_single, resolution)
     param_all = convert(Array{Float64, 2}, veg_param)
 
     iboxes = getfield(wsh_single, resolution)
-    ind_senorge = getfield(wsh_single, :ind_senorge)
+    gridcel = getfield(wsh_single, :gridcel)
 
     param_tmp = []
     
     for ibox in unique(iboxes)
 
-        isel = findin(param_all[:, 1], ind_senorge[iboxes .== ibox])
+        isel = findin(param_all[:, 1], gridcel[iboxes .== ibox])
 
         param_mean = average_vegparams(param_all, isel)
 

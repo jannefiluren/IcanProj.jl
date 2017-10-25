@@ -29,6 +29,6 @@ for wsh_single in wsh_info
     
     @test all(wsh_single.elev .>= 0)
     @test all(wsh_single.elev .<= 3000)
-    @test size(wsh_single.ind_senorge) == (50, 50)
+    @test size(wsh_single.gridcel) == (50, 50)
 
 end
