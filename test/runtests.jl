@@ -8,7 +8,7 @@ using Base.Test
 
 # 1. Prepare metadata for the experiment catchments
 
-include("metadata_script.jl")
+#include("metadata_script.jl")
 
 # 2. Prepare vic input files using the metadata
 

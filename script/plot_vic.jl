@@ -101,25 +101,7 @@ function monthly_summary(dict_wsh)
 end
 
 
-"""
-Link drainage basin key to watershed name.
-"""
-function get_wsh_name(wsh_info)
 
-    wsh_name = Dict()
-
-    for wsh_one in wsh_info
-
-        name = wsh_one.name
-        regine_main = wsh_one.regine_main
-
-        wsh_name[regine_main] = name
-
-    end
-
-    return wsh_name
-
-end
 
 
 """

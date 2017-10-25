@@ -88,7 +88,7 @@ function analysis_elevation()
     end
 
     plt[:xlabel]("Spatial resolution")
-    plt[:ylabel]("Elevation range (m)")
+    plt[:ylabel]("Standard deviation of altitude (m)")
     plt[:xticks](collect(0:length(resolutions)-1), resolutions)
     plt[:legend]()
 

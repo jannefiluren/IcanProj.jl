@@ -13,6 +13,8 @@ function summaries_results(watersheds, resolutions)
 
         for resolution in resolutions
 
+            @show resolution
+
             # Read results in simulation directory
 
             path = joinpath(path_sim, watershed, resolution, "results")

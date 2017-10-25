@@ -21,7 +21,7 @@ export get_options, get_wsh_info
 
 # Handle metadata
 
-export WatershedData, load_metadata, clean_metadata, get_watershed_data
+export WatershedData, load_metadata, clean_metadata, get_watershed_data, get_wsh_name
 
 include("metadata.jl")
 
