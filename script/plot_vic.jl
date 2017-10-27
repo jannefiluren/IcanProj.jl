@@ -5,40 +5,6 @@ using IcanProj
 
 
 
-"""
-Load all results into a dictonary.
-"""
-function get_results(path)
-
-    resolutions = ["5km", "10km", "25km", "50km"]
-
-    watersheds = readdir(path)
-
-    dict_wsh = Dict()
-
-    for watershed in watersheds
-
-        dict_res = Dict()
-
-        for resolution in resolutions
-            
-            file = joinpath(path, watershed, "res_$(resolution).csv")
-
-            df = readtable(file)
-
-            df[:time] = DateTime.(df[:time], DateFormat("yyyy-mm-ddTHH:MM:SS"))
-
-            dict_res[resolution] = df
-
-        end
-
-        dict_wsh[watershed] = dict_res
-
-    end
-
-    return dict_wsh
-
-end
 
 
 """
@@ -133,7 +99,7 @@ function plot_monthly(dict_monthly, wsh_name, var_name, ylabel_name, plot_title,
 
         i += 1
 
-        if i == 8
+        if i == 6
             legend()
         end
 
@@ -152,6 +118,36 @@ end
 
 
 
+"""
+Compute yearly average evapotranspiration.
+"""
+function yearly_average_evapotranspiration(dict_monthly)
+
+    df_evap = DataFrame()
+
+    df_evap[:Resolution] = collect(keys(dict_monthly["224.1"]))
+
+    for (key_wsh, dict_wsh) in dict_monthly
+
+        evap_sum = []
+
+        for (key_res, df_res) in dict_wsh
+            
+            push!(evap_sum, sum(df_res[:evap_sum_mean]))
+
+        end
+
+        df_evap[Symbol(wsh_name[key_wsh])] = evap_sum
+
+    end
+
+    return df_evap
+
+end
+
+
+
+
 
 # Set paths
 
@@ -159,13 +155,17 @@ path = "/data02/Ican/vic_sim/jan_eval_new/"
 
 # Load all necessary results
 
-dict_wsh = get_results(path)
+opt = get_options()
+
+dict_wsh = get_summary_tables(path, opt)
 
 dict_monthly = monthly_summary(dict_wsh)
 
 @load Pkg.dir("IcanProj", "data", "wsh_info.jld2") wsh_info
 
 wsh_name = get_wsh_name(wsh_info)
+
+
 
 # Plot monthly averaged states and fluxes
 
@@ -176,3 +176,40 @@ plot_monthly(dict_monthly, wsh_name, :snow_depth_mean, "HS (cm)", "Snow depth", 
 plot_monthly(dict_monthly, wsh_name, :evap_sum_mean, "Evap (mm/month)", "Evapotranspiration", "evap")
 
 plot_monthly(dict_monthly, wsh_name, :total_runoff_sum_mean, "Runoff (mm/month)", "Runoff", "runoff")
+
+
+
+
+# Dataframe with yearly mean evapotranspiration
+
+df_evap = yearly_average_evapotranspiration(dict_monthly)
+
+
+
+
+
+
+
+# Plot time series
+
+function plot_time_series(dict_wsh, wsh_key, var_name, ylabel_name)
+
+    dict_res = dict_wsh[wsh_key]
+
+    for (key_res, df_res) in dict_res
+        
+        #plot(df_res[:time], df_res[:runoff]+df_res[:baseflow], label = key_res)
+        plot(df_res[:time], df_res[var_name], label = key_res)
+
+    end
+
+    legend()
+    title(wsh_name[wsh_key])
+    ylabel(ylabel_name)
+
+end
+
+wsh_key = "22.4"
+var_name = :evap
+ylabel_name = "Evapotranspiration (mm/3h)"
+plot_time_series(dict_wsh, wsh_key, var_name, ylabel_name)

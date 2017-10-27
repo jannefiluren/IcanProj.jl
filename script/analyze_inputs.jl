@@ -101,8 +101,6 @@ function load_from_forcings(watersheds, resolutions, opt)
 end
 
 
-
-
     
 """
 Plot input data characteristics against different resolutions.

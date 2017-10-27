@@ -26,7 +26,7 @@ export WatershedData, load_metadata, clean_metadata, get_watershed_data, get_wsh
 include("metadata.jl")
 
 
-# Functions for handling vic data
+# Functions for handling vic data for simulations
 
 export write_global_param, write_soil_params, write_vic_forcing, write_veg_params
 
@@ -37,6 +37,15 @@ export read_vic_forcing, read_mtclim
 export read_fluxes, read_all_fluxes, read_snow, read_all_snow, read_results, read_all_results
 
 include("vic_io.jl")
+
+
+
+# Functions for handling vic results (processing and loading)
+
+export get_summary_tables
+
+include("handle_results.jl")
+
 
 
 # Function for aggregating data (from finer to courser grid resolution)

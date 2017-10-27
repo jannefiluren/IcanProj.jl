@@ -16,7 +16,7 @@ using Base.Test
 
 # 3. Run vic simulations
 
-#include("run_vic.jl")
+include("run_vic.jl")
 
 
 ##########################################################################
@@ -40,7 +40,7 @@ using Base.Test
 
 # Plotting scripts
 
-#include("plots_script.jl")
+# include("plots_script.jl")
 
 
 

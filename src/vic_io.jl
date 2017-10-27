@@ -180,7 +180,7 @@ function write_global_param(path_sim, path_forcing, startyear, endyear, timestep
     # Output Files and Parameters
     #######################################################################
     RESULT_DIR      $(path_sim)/results/	# Results directory path
-    OUT_STEP        0       # Output interval (hours); if 0, OUT_STEP = TIME_STEP
+    OUT_STEP        24       # Output interval (hours); if 0, OUT_STEP = TIME_STEP
     SKIPYEAR 	0	# Number of years of output to omit from the output files
     COMPRESS	FALSE	# TRUE = compress input and output files when done
     BINARY_OUTPUT $output_binary	# TRUE = binary output files

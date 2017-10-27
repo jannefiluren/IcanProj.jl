@@ -1,18 +1,24 @@
 # Run vic for all watersheds and resolutions
 
-path_sim = "/data02/Ican/vic_sim/jan_past_new"
+using IcanProj
 
-wsh_names = readdir(path_sim)
+opt = get_options()
 
-for wsh_name in wsh_names
+path_sim = opt["target_folder"]
 
-    resolutions = ["1km"]  #["5km", "10km", "25km", "50km"]
+watersheds = opt["stat_sel"]
+
+resolutions = opt["resolutions"]
+
+for watershed in watersheds
+
+    resolutions = ["1km", "5km", "10km", "25km", "50km"]
 
     for resolution in resolutions
 
-        info("Running vic for $(wsh_name) at $(resolution) resolution")
+        info("Running vic for $(watershed) at $(resolution) resolution")
 
-        run(`/felles/jmg/VIC.4.2.d/src/./vicNl -g $(joinpath(path_sim, wsh_name, resolution, "params/global_param"))`)
+        run(`/felles/jmg/VIC.4.2.d/src/./vicNl -g $(joinpath(path_sim, watershed, resolution, "params/global_param"))`)
 
     end
 
