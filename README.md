@@ -12,7 +12,7 @@ The subfolder `/past_1km/` contains simulations for the historic period spanning
 
 ## Notes about the vic model
 
-We are using VIC.4.2.d., which is documented [here](http://vic.readthedocs.io/en/vic.4.2.d/).
+We are using VIC.4.2.d., which is documented [here](http://vic.readthedocs.io/en/vic.4.2.d/) and source code available [here](https://github.com/UW-Hydro/VIC/tree/VIC.4.2.b).
  
 - [Documentation of meteorological forcings](http://vic.readthedocs.io/en/vic.4.2.d/Documentation/ForcingData/) foc vic.
 - [Documentation of soil parameter file](http://vic.readthedocs.io/en/vic.4.2.d/Documentation/SoilParam/) for vic.
