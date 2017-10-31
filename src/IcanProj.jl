@@ -14,16 +14,26 @@ using ProgressMeter
 
 # Global settings
 
+export get_options, get_wsh_info
+
 include("global_settings.jl")
 
-export get_options, get_wsh_info
+
+
+# Data structures
+
+export WatershedData, VicRes, VicInput
+
+include("data_structures.jl")
+
 
 
 # Handle metadata
 
-export WatershedData, load_metadata, clean_metadata, get_watershed_data, get_wsh_name
+export load_metadata, clean_metadata, get_watershed_data, get_wsh_name
 
 include("metadata.jl")
+
 
 
 # Functions for handling vic data for simulations
@@ -53,11 +63,6 @@ include("handle_results.jl")
 export average_forcings, average_soilparams, average_vegparams
 
 include("vic_agg.jl")
-
-
-
-
-
 
 
 

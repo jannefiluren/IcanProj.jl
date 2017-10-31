@@ -149,13 +149,14 @@ end
 
 
 
-# Set paths
-
-path = "/data02/Ican/vic_sim/jan_eval_new/"
-
 # Load all necessary results
 
 opt = get_options()
+
+path = opt["eval_folder"]
+
+
+
 
 dict_wsh = get_summary_tables(path, opt)
 

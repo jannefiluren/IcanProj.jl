@@ -1,24 +1,5 @@
 
 
-"""
-Struct with metadata for watersheds.
-"""
-struct WatershedData
-
-    name::String
-    regine_main::String
-    dbk::Float64
-    xrange::UnitRange{Int64}
-    yrange::UnitRange{Int64}
-    gridcel::Array{Int64,2}
-    ind_1km::Array{Int64,2}
-    ind_5km::Array{Int64,2}
-    ind_10km::Array{Int64,2}
-    ind_25km::Array{Int64,2}
-    ind_50km::Array{Int64,2}
-    elev::Array{Float64,2}
-
-end
 
 
 """

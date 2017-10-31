@@ -912,7 +912,7 @@ end
 
 
 
-
+#=
 """
 Read all result files in a directory (binary files).
 """
@@ -929,7 +929,7 @@ function read_all_results(path)
 
     # Number of time and data columns in results files
 
-    ntime = 4
+    ntime = 3
 
     ndata = length(colnames)
     
@@ -957,13 +957,99 @@ function read_all_results(path)
 
     names!(df, colnames)
 
-    df[:time] = DateTime.(time[:,1], time[:,2], time[:,3], time[:,4])
+    df[:time] = DateTime.(time[:,1], time[:,2], time[:,3])
 
     return df
 
 end
+=#
 
 
+"""
+Read all result files in a directory (binary files).
+"""
+function read_all_results(path, watershed, resolution, wsh_name)
+
+    info("Processing data in folder: $(path)")
+
+    # Data info
+
+    colnames = [:prec, :evap, :runoff, :baseflow, :wdew, :net_short, :r_net,
+                :latent, :evap_canop, :transp_veg, :evap_bare, :sub_canop,
+                :sub_snow, :rel_humid, :in_long, :wind, :swe, :snow_depth,
+                :snow_canopy, :snow_cover]
+
+    # Number of time and data columns in results files
+
+    ntime = 3
+
+    ndata = length(colnames)
+    
+    # Read soil parameter file
+
+    soil_param = read_soil_params(joinpath(path, watershed, resolution))
+
+    lat = soil_param[:lat]
+    lon = soil_param[:lon]
+    elev = soil_param[:elev]
+    gridcel = soil_param[:gridcel]
+    name = wsh_name[watershed]
+   
+    # Load first file and allocate output array
+
+    lat_str = @sprintf("%0.5f", lat[1])
+    lon_str = @sprintf("%0.5f", lon[1])
+
+    file_res = joinpath(path, watershed, resolution, "results/results_$(lat_str)_$(lon_str)")
+
+    time_raw, data_raw = read_results(path, file_res, ntime, ndata)
+
+    data = reshape(data_raw, ndata, :)'
+
+    data_all = zeros(size(data,1), size(data,2), size(soil_param,1))
+
+    # Load remaining files
+
+    @showprogress 1 "Processing..." for i in 2:size(soil_param,1)
+        
+        lat_str = @sprintf("%0.5f", lat[i])
+        lon_str = @sprintf("%0.5f", lon[i])
+
+        file_res = joinpath(path, watershed, resolution, "results/results_$(lat_str)_$(lon_str)")
+
+        time_raw, data_raw = read_results(path, file_res, ntime, ndata)
+
+        data = reshape(data_raw, ndata, :)'
+
+        data_all[:,:,i] = data
+
+    end
+
+    # Average data spatially
+
+    data_mean = mean(data_all, 3)[:,:,1]
+
+    # Handle time
+
+    time = reshape(time_raw, ntime, :)'
+
+    time = DateTime.(time[:,1], time[:,2], time[:,3])
+
+    # Create data frame
+
+    df_vic = DataFrame(data_mean)
+
+    names!(df_vic, colnames)
+
+    df_vic[:time] = time
+
+    # Create result struct
+
+    res_vic = VicRes(name, watershed, lat, lon, gridcel, elev, data_all, data_mean, colnames, time)
+
+    return df_vic, res_vic
+
+end
 
 
 
