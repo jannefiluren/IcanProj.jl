@@ -286,30 +286,33 @@ function write_global_param(path_sim, path_forcing, startyear, endyear, timestep
    
     N_OUTFILES    1
 
-    N_OUTFILES    1
+    OUTFILE       results        25 
 
-    OUTFILE       results        20 
-
-    OUTVAR      OUT_PREC	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_EVAP	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_RUNOFF	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_BASEFLOW	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_WDEW	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_NET_SHORT	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_R_NET	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_LATENT	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_EVAP_CANOP	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_TRANSP_VEG	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_EVAP_BARE	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_SUB_CANOP	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_SUB_SNOW	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_REL_HUMID	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_IN_LONG	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_WIND	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_SWE	            * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_SNOW_DEPTH	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_SNOW_CANOPY	    * OUT_TYPE_DOUBLE		*
-    OUTVAR      OUT_SNOW_COVER	    * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_PREC            * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_AIR_TEMP        * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_RAINF           * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SNOWF           * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_WIND            * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_RUNOFF          * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_BASEFLOW        * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_INFLOW          * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_EVAP            * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SUB_SNOW        * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_TRANSP_VEG      * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SUB_CANOP       * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_ZWT_LUMPED      * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SOIL_WET        * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SWE             * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SNOW_COVER      * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SNOW_CANOPY     * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_WDEW            * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_LATENT          * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SENSIBLE        * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_NET_LONG        * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_NET_SHORT       * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_PET_H2OSURF     * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_PET_SHORT       * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_PET_NATVEG      * OUT_TYPE_DOUBLE		*
 
 
     """
@@ -906,10 +909,6 @@ function read_all_fluxes(path)
 end
 
 
-# path = "/data02/Ican/vic_sim/jan_past_new/2.32/25km/results"
-
-# file = "results_61.81269_9.74909"
-
 
 
 #=
@@ -974,10 +973,10 @@ function read_all_results(path, watershed, resolution, wsh_name)
 
     # Data info
 
-    colnames = [:prec, :evap, :runoff, :baseflow, :wdew, :net_short, :r_net,
-                :latent, :evap_canop, :transp_veg, :evap_bare, :sub_canop,
-                :sub_snow, :rel_humid, :in_long, :wind, :swe, :snow_depth,
-                :snow_canopy, :snow_cover]
+    colnames = [:prec, :air_temp, :rainf, :snowf, :wind, :runoff, :baseflow, :inflow,
+                :evap, :sub_snow, :transp_veg, :sub_canop, :zwt_lumped, :soil_wet, :swe,
+                :snow_cover, :snow_canopy, :wdew, :latent, :sensible, :net_long, :net_short,
+                :pet_h2osurf, :pet_short, :pet_natveg]
 
     # Number of time and data columns in results files
 
@@ -995,7 +994,7 @@ function read_all_results(path, watershed, resolution, wsh_name)
     gridcel = soil_param[:gridcel]
     name = wsh_name[watershed]
    
-    # Load first file and allocate output array
+    # Load one file and allocate output array
 
     lat_str = @sprintf("%0.5f", lat[1])
     lon_str = @sprintf("%0.5f", lon[1])
@@ -1008,9 +1007,9 @@ function read_all_results(path, watershed, resolution, wsh_name)
 
     data_all = zeros(size(data,1), size(data,2), size(soil_param,1))
 
-    # Load remaining files
+    # Load results from all files
 
-    @showprogress 1 "Processing..." for i in 2:size(soil_param,1)
+    @showprogress 1 "Processing..." for i in 1:size(soil_param,1)
         
         lat_str = @sprintf("%0.5f", lat[i])
         lon_str = @sprintf("%0.5f", lon[i])

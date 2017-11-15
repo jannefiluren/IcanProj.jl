@@ -8,15 +8,15 @@ using Base.Test
 
 # 1. Prepare metadata for the experiment catchments
 
-include("metadata_script.jl")
+# include("metadata_script.jl")
 
 # 2. Prepare vic input files using the metadata
 
-include("vic_setup_data.jl")
+# include("vic_setup_data.jl")
 
 # 3. Run vic simulations
 
-include("run_vic.jl")
+# include("run_vic.jl")
 
 
 ##########################################################################
@@ -25,7 +25,7 @@ include("run_vic.jl")
 
 # 1. Average vic output and store in dataframes
 
-#include("process_vic_output.jl")
+# include("../src/process_vic_output.jl")
 
 
 

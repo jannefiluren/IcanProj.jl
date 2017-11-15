@@ -58,7 +58,7 @@ include("handle_results.jl")
 
 
 
-# Function for aggregating data (from finer to courser grid resolution)
+# Function for aggregating data (from finer to coarser grid resolution)
 
 export average_forcings, average_soilparams, average_vegparams
 
