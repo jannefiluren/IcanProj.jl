@@ -30,7 +30,7 @@ include("data_structures.jl")
 
 # Handle metadata
 
-export load_metadata, clean_metadata, get_watershed_data, get_wsh_name
+export load_metadata, clean_metadata, get_watershed_data, get_wsh_name, resolution_ind
 
 include("metadata.jl")
 
@@ -52,7 +52,7 @@ include("vic_io.jl")
 
 # Functions for handling vic results (processing and loading)
 
-export get_summary_tables
+export get_summary_tables, get_variable
 
 include("handle_results.jl")
 

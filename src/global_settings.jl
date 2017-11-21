@@ -19,7 +19,7 @@ function get_options()
     opt["endyear"] = 2012
     opt["timestep"] = 3
     opt["output_force"] = "FALSE"
-    opt["full_energy"] = "TRUE"
+    opt["full_energy"] = "FALSE"
     opt["output_binary"] = "TRUE"
 
     return opt

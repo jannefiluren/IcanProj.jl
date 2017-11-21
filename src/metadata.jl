@@ -55,6 +55,19 @@ function resolution_ind(res)
     return ind
 end
 
+function resolution_ind(res, nrow, ncol)
+    @assert 50%res==0
+    ind = fill(-9999, nrow, ncol)
+    nrow = nrow-nrow%res-res+1
+    ncol = ncol-ncol%res-res+1
+    counter = 1
+    for irow = 1:res:nrow, icol = 1:res:ncol
+        ind[irow:irow+res-1, icol:icol+res-1] = counter
+        counter += 1
+    end
+    return ind
+end
+
 
 """
 Collect metadata for selected watershed.

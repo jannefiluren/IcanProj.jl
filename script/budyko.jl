@@ -35,11 +35,17 @@ function plot_budyko(opt, watershed)
 
     ivar = find(res_vic.var_names .== "prec")
 
-    data_prec = res_vic.data_all[:,ivar[1],:]
+    data_prec = res_vic.data_all[2:end,ivar[1],:]
 
     ivar = find(res_vic.var_names .== "pet_short")
 
-    data_pet = res_vic.data_all[:,ivar[1],:]
+    data_pet = res_vic.data_all[2:end,ivar[1],:]
+
+
+    ivar = find(res_vic.var_names .== "evap")
+
+    data_aet = res_vic.data_all[2:end,ivar[1],:]
+
 
 
     # Compute yearly average prec and pet for each gridcell
@@ -48,7 +54,12 @@ function plot_budyko(opt, watershed)
 
     mean_pet = 365 * mean(data_pet, 1)
 
+    mean_aet = 365 * mean(data_aet, 1)
+
     pet_div_p = mean_pet./mean_prec
+
+    aet_div_p = mean_aet./mean_prec
+
 
 
     # Compute error in aet estimates by using the mean of the function or
@@ -90,6 +101,8 @@ function plot_budyko(opt, watershed)
     plot(x_values, budyko.(x_values), label = "budyko")
     plot(x_values, zhang.(x_values, 0.3), label = "zhang (w = 0.3)")
 
+    scatter(pet_div_p, aet_div_p)
+    
     min_ratio = minimum(pet_div_p)
     max_ratio = maximum(pet_div_p)
 

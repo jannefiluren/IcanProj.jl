@@ -286,7 +286,7 @@ function write_global_param(path_sim, path_forcing, startyear, endyear, timestep
    
     N_OUTFILES    1
 
-    OUTFILE       results        25 
+    OUTFILE       results        28 
 
     OUTVAR      OUT_PREC            * OUT_TYPE_DOUBLE		*
     OUTVAR      OUT_AIR_TEMP        * OUT_TYPE_DOUBLE		*
@@ -313,6 +313,9 @@ function write_global_param(path_sim, path_forcing, startyear, endyear, timestep
     OUTVAR      OUT_PET_H2OSURF     * OUT_TYPE_DOUBLE		*
     OUTVAR      OUT_PET_SHORT       * OUT_TYPE_DOUBLE		*
     OUTVAR      OUT_PET_NATVEG      * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_SOIL_LIQ        * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_EVAP_CANOP      * OUT_TYPE_DOUBLE		*
+    OUTVAR      OUT_EVAP_BARE       * OUT_TYPE_DOUBLE		*
 
 
     """
@@ -976,7 +979,8 @@ function read_all_results(path, watershed, resolution, wsh_name)
     colnames = [:prec, :air_temp, :rainf, :snowf, :wind, :runoff, :baseflow, :inflow,
                 :evap, :sub_snow, :transp_veg, :sub_canop, :zwt_lumped, :soil_wet, :swe,
                 :snow_cover, :snow_canopy, :wdew, :latent, :sensible, :net_long, :net_short,
-                :pet_h2osurf, :pet_short, :pet_natveg]
+                :pet_h2osurf, :pet_short, :pet_natveg, :soil_liq1, :soil_liq2, :soil_liq3,
+                :evap_canop, :evap_bare]
 
     # Number of time and data columns in results files
 
