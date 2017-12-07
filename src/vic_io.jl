@@ -686,7 +686,7 @@ end
 """
 Read mtclim output.
 """
-function read_mtclim(file)
+function read_mtclim_hbv(file)
 
     #=
     OUTVAR		OUT_PREC	    * OUT_TYPE_USINT	40      incoming precipitation [mm]
@@ -728,6 +728,58 @@ function read_mtclim(file)
     return prec, tair, iswr, ilwr, pres, qair, vp, wind
 
 end
+
+
+
+
+"""
+Read mtclim output.
+"""
+function read_mtclim_fsm(file)
+
+    #=
+    OUTVAR		OUT_RAINF	* OUT_TYPE_USINT	40    [mm]
+    OUTVAR		OUT_SNOWF	* OUT_TYPE_USINT	40    [mm]
+    OUTVAR		OUT_AIR_TEMP	* OUT_TYPE_SINT		100   [C]
+    OUTVAR		OUT_SHORTWAVE	* OUT_TYPE_USINT	50    [W/m2]
+    OUTVAR		OUT_LONGWAVE	* OUT_TYPE_USINT	80    [W/m2]
+    OUTVAR		OUT_PRESSURE	* OUT_TYPE_USINT	100   [kPa]
+    OUTVAR		OUT_REL_HUMID	* OUT_TYPE_USINT	100   [%]
+    OUTVAR		OUT_WIND	* OUT_TYPE_USINT	100   [m/s]
+    =#
+
+    rainf = Float64[]
+    snowf = Float64[]
+    tair = Float64[]
+    iswr = Float64[]
+    ilwr = Float64[]
+    pres = Float64[]
+    rhum = Float64[]
+    wind = Float64[]
+
+    fid = open(file, "r")
+
+    while !eof(fid)
+
+        push!(rainf , convert(Float64, read(fid, UInt16))/40.0)
+        push!(snowf , convert(Float64, read(fid, UInt16))/40.0)
+        push!(tair  , convert(Float64, read(fid, Int16))/100.0)
+        push!(iswr  , convert(Float64, read(fid, UInt16))/50.0)
+        push!(ilwr  , convert(Float64, read(fid, UInt16))/80.0)
+        push!(pres  , convert(Float64, read(fid, UInt16))/100.0)
+        push!(rhum  , convert(Float64, read(fid, UInt16))/100.0)
+        push!(wind  , convert(Float64, read(fid, UInt16))/100.0)
+
+    end
+
+    close(fid)
+
+    return rainf, snowf, tair, iswr, ilwr, pres, rhum, wind
+
+end
+
+
+
 
 
 """
