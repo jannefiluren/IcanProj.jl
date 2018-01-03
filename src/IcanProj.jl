@@ -9,6 +9,7 @@ using JLD2
 using FileIO
 using PyPlot
 using ProgressMeter
+using NetCDF
 
 
 
@@ -71,6 +72,15 @@ include("vic_agg.jl")
 export analysis_elevation
 
 include("plots/analysis_elevation.jl")
+
+
+
+# Data handling functions
+
+export create_netcdf
+
+include("data_netcdf.jl")
+
 
 
 
