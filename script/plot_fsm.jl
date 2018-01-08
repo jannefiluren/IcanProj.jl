@@ -5,86 +5,52 @@ using PyPlot
 using NveData
 
 
-# Test with 1km resolution
 
-ind_senorge, xcoord, ycoord = senorge_info()
 
-file = Pkg.dir("IcanProj", "data", "df_links.csv")
+function resample_results(file_nc, timeload, variable, id_desc)
 
-df_meta = readtable(file)
+    df_meta = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
+
+    time_nc = ncread(file_nc, "time_str")
     
-file = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/hs_1km.nc"
+    itime = find(time_nc .== Dates.format(timeload, "yyyy-mm-dd HH:MM:SS"))[1]
 
-time_str = ncread(file, "time_str")
+    df_left = DataFrame(ind_orig = 1:length(ncread(file_nc, "dim_space")),
+                        ind_data = convert(Array{Int64}, ncread(file_nc, String(id_desc))))
 
-time = DateTime.(time_str, "yyyy-mm-dd HH:MM:SS")
+    df_right = DataFrame(ind_data = df_meta[id_desc],
+                         ind_julia = df_meta[:ind_julia])
 
-itime = find(time .== DateTime(2005, 8, 1))[1]
+    df = join(df_left, df_right, on=:ind_data)
 
-df_left = DataFrame(ind_senorge = ncread(file, "ind_senorge"),
-                    hs = ncread(file, "hs", start = [itime, 1], count = [1,-1])[:])
+    variable = ncread(file_nc, variable, start = [itime, 1], count = [1,-1])[:]
 
-df = join(df_left, df_meta, on=:ind_senorge)
+    tmp = fill(NaN, 1550, 1195)
 
+    for row in eachrow(df)
 
-# Project results to map
+        tmp[row[:ind_julia]] = variable[row[:ind_orig]]
 
-imap = convert(Array{Int64}, df[:ind_julia])
+    end
 
-hs = convert(Array{Float64}, df[:hs])
-
-tmp = fill(NaN, size(ind_senorge))
-
-tmp[imap] = hs
-
-PyPlot.imshow(tmp)
-
-
-
-
-
-# Test with 5km resolution
-
-ind_senorge, xcoord, ycoord = senorge_info()
-
-file = Pkg.dir("IcanProj", "data", "df_links.csv")
-
-df_meta = readtable(file)
-    
-file = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/hs_5km.nc"
-
-time_str = ncread(file, "time_str")
-
-time = DateTime.(time_str, "yyyy-mm-dd HH:MM:SS")
-
-itime = find(time .== DateTime(2005, 3, 1))[1]
-
-ind_coarse = convert(Array{Int64}, ncread(file, "ind_5km"))
-
-hs_coarse = ncread(file, "hs", start = [itime, 1], count = [1,-1])[:]
-
-ind_fine = df_meta[:ind_5km]
-
-hs_resampled = fill(0.0, length(ind_fine))
-
-for i in eachindex(ind_coarse)
-
-    hs_resampled[ind_fine .== ind_coarse[i]] = hs_coarse[i]
+    return(tmp)
 
 end
 
 
+file_nc = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/hs_25km.nc"
 
+timeload = DateTime(2005,3,1)
 
-imap = convert(Array{Int64}, df[:ind_julia])
+variable = "hs"
 
-hs = convert(Array{Float64}, hs_resampled)
+id_desc = :ind_25km
 
-tmp = fill(NaN, size(ind_senorge))
-
-tmp[imap] = hs
+tmp = resample_results(file_nc, timeload, variable, id_desc)
 
 PyPlot.imshow(tmp)
+
+
 
 
 
