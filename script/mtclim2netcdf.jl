@@ -3,7 +3,7 @@ using NetCDF
 
 # Settings
 
-path = "/data02/Ican/vic_sim/past_1km_fsm"
+path = "/data02/Ican/vic_sim/fsm_past_1km"
 
 time_start = DateTime(2002,1,1)
 
@@ -23,9 +23,9 @@ dim_space = size(soil_param, 1)
 # Auxiliary variables
 
 time_str = Dates.format.([time_start + i*Dates.Hour(3) for i in 0:dim_time-1], "yyyy-mm-dd HH:MM:SS")
-lon = soil_param[:lon]
-lat = soil_param[:lat]
-senorge_ind = soil_param[:gridcel]
+lon = convert(Array{Float64}, soil_param[:lon])
+lat = convert(Array{Float64}, soil_param[:lat])
+ind_senorge = convert(Array{Int64}, soil_param[:gridcel])
 
 
 # Create netcdf files
@@ -48,11 +48,11 @@ var_atts = [Dict("units" => "mm/tstep"),
             Dict("units" => "%"),
             Dict("units" => "m/s")]
 
-fn = joinpath.(path, "netcdf", var .* ".nc")
+fn = joinpath.(path, "netcdf", var .* "_1km.nc")
 
 for i in 1:length(var)
     
-    create_netcdf(fn[i], var[i], var_atts[i], dim_time, dim_space, time_str, lon, lat, senorge_ind)
+    create_netcdf(fn[i], var[i], var_atts[i], dim_time, dim_space, time_str, lon, lat, ind_senorge, "ind_senorge")
     
 end
 
@@ -60,8 +60,6 @@ end
 # Loop over files
 
 for i in 1:size(soil_param,1)
-    
-    #row = soil_param[i, :]
 
     lat_str = @sprintf("%0.5f", lat[i])
     lon_str = @sprintf("%0.5f", lon[i])
@@ -82,7 +80,6 @@ for i in 1:size(soil_param,1)
     if mod(i, 1000) == 0
         print("Processed $i grids\n")
     end
-    
     
 end
 
