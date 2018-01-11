@@ -1,5 +1,64 @@
 
+#=
+"""
+Create netcdf file for one variable.
+"""
+function create_netcdf(filename, var, var_atts, dim_time, dim_space, time_str, id_space)
 
+    
+    time = collect(1:dim_time)
+    space = collect(1:dim_space)
+
+    
+    timeatts = Dict("units" => "none")
+    spaceatts = Dict("units" => "none")
+
+    nccreate(filename, var, "dim_time", time, timeatts, "dim_space", space, spaceatts, atts = var_atts)
+    nccreate(filename, "time_str", "dim_time", time, t=String)
+    nccreate(filename, "id_desc", "dim_space", space)
+
+    ncwrite(time_str, filename, "time_str")
+    ncwrite(id, filename, "id_desc")
+
+    ncclose()
+
+    return nothing
+
+end
+=#
+
+
+
+
+"""
+Create netcdf file for one variable.
+"""
+function create_netcdf(filename, var, var_atts, dim_time, dim_space, time_str, id, id_desc)
+
+    time = collect(1:dim_time)
+    space = collect(1:dim_space)
+
+    timeatts = Dict("format" => "yyyy-mm-dd HH:MM:SS")
+    spaceatts = Dict("id" => id_desc)
+    
+    nccreate(filename, var, "dim_time", time, timeatts, "dim_space", space, spaceatts, atts = var_atts)
+    nccreate(filename, "time_str", "dim_time", time, t=String)
+    nccreate(filename, "id", "dim_space", space)
+
+    ncwrite(time_str, filename, "time_str")
+    ncwrite(id, filename, "id")
+
+    ncclose()
+
+    return nothing
+
+end
+
+
+
+
+
+#=
 """
 Create netcdf file for one variable.
 """
@@ -52,3 +111,5 @@ function create_netcdf(filename, var, var_atts, dim_time, dim_space, time_str, i
     return nothing
 
 end
+
+=#

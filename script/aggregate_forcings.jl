@@ -13,15 +13,13 @@ function aggregate_forcings(path, var, res)
     
     # Metadata from table
 
-    file = Pkg.dir("IcanProj", "data", "df_links.csv")
-
-    df_meta = readtable(file)
+    df_meta = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
     
     # Metadata from input netcdfs
 
     file_in = joinpath(path, "$(var)_1km.nc")
 
-    nc_in = Dict("ind_senorge" => ncread(file_in, "ind_senorge"),
+    nc_in = Dict("ind_senorge" => ncread(file_in, "id"),
                  "time_str" => ncread(file_in, "time_str"),
                  "var_atts" => ncgetatt(file_in, var, "units"))
 

@@ -1,57 +1,132 @@
-using DataFrames
-using NetCDF
+
 using IcanProj
+using NetCDF
+using ProgressMeter
+using DataFrames
 using PyPlot
-using NveData
 
 
+function aggregate_results!(data_grid, df_cmp)
 
-
-function resample_results(file_nc, timeload, variable, id_desc)
-
-    df_meta = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
-
-    time_nc = ncread(file_nc, "time_str")
+    df_old_1km = df_cmp
     
-    itime = find(time_nc .== Dates.format(timeload, "yyyy-mm-dd HH:MM:SS"))[1]
+    df_old_1km[:variable] = data_grid[df_old_1km[:ind_julia]]
+    
+    df_agg = aggregate(df_old_1km, :id, mean)
 
-    df_left = DataFrame(ind_orig = 1:length(ncread(file_nc, "dim_space")),
-                        ind_data = convert(Array{Int64}, ncread(file_nc, String(id_desc))))
+    df_new_1km = join(df_old_1km, df_agg, on = :id)
 
-    df_right = DataFrame(ind_data = df_meta[id_desc],
-                         ind_julia = df_meta[:ind_julia])
+    data_grid[df_new_1km[:ind_julia]] = df_new_1km[:variable_mean]
 
-    df = join(df_left, df_right, on=:ind_data)
+    return nothing
+    
+end
 
-    variable = ncread(file_nc, variable, start = [itime, 1], count = [1,-1])[:]
 
-    tmp = fill(NaN, 1550, 1195)
 
-    for row in eachrow(df)
 
-        tmp[row[:ind_julia]] = variable[row[:ind_orig]]
 
-    end
 
-    return(tmp)
+
+# Settings
+
+file_ref = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/hs_1km.nc"
+
+file_cmp = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/hs_5km.nc"
+
+variable = "hs"
+
+id_desc = :ind_5km
+
+tstart = DateTime(2002, 10, 1)
+
+tstop = DateTime(2003, 10, 1)
+
+
+# Load time information
+
+timevec = ncread(file_ref, "time_str")
+
+timevec = DateTime.(timevec, "yyyy-mm-dd HH:MM:SS")
+
+
+# Link resolutions
+
+df_ref = link_resolutions(file_ref, :ind_senorge)
+
+df_cmp = link_resolutions(file_cmp, id_desc)
+
+
+# Initilize variables
+
+tmp = resample_results(file_ref, timevec[1], "hs", df_ref)
+
+tmp[.!isnan.(tmp)] .= 0.0
+
+sqerror = copy(tmp)
+meanref = copy(tmp)
+meancmp = copy(tmp)
+resref = copy(tmp)
+rescmp = copy(tmp)
+
+
+# Loop over selected period
+
+timevec = timevec[tstart .<= timevec .<= tstop]
+
+@showprogress "Computing for ... " for timeload in timevec
+
+    # Load and resample results
+    
+    resample_results!(resref, file_ref, timeload, "hs", df_ref)
+
+    resample_results!(rescmp, file_cmp, timeload, "hs", df_cmp)
+
+    # Aggregate fine resolution results
+
+    aggregate_results!(resref, df_cmp)
+
+    # Compute statistics
+
+    sqerror += (resref - rescmp).^2
+
+    meanref += resref
+
+    meancmp += rescmp
 
 end
 
 
-file_nc = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/hs_25km.nc"
+# Compute stuff
 
-timeload = DateTime(2005,3,1)
+rmse = sqrt.(sqerror/length(timevec))
 
-variable = "hs"
+meanref = meanref/length(timevec)
 
-id_desc = :ind_25km
+meancmp = meancmp/length(timevec)
 
-tmp = resample_results(file_nc, timeload, variable, id_desc)
+nrmse = rmse ./ meanref
 
-PyPlot.imshow(tmp)
+pbias = 100 * (meancmp ./ meanref-1)
 
+# Plot stuff
 
+figure()
+imshow(meanref)
+colorbar()
+title("Mean hs (m) for fine scale run")
 
+figure()
+imshow(meancmp)
+colorbar()
+title("Mean hs (m) for coarse scale run")
 
+figure()
+imshow(pbias)
+colorbar()
+title("Bias in hs (%) between coarse and fine scale run")
 
-
+figure()
+imshow(nrmse)
+colorbar()
+title("NRMSE (-) between coarse and fine scale run")

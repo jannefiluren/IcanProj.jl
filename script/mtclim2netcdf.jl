@@ -1,5 +1,6 @@
 using IcanProj
 using NetCDF
+using ProgressMeter
 
 # Settings
 
@@ -16,7 +17,6 @@ soil_param = read_soil_params(path)
 # Dimensions
 
 dim_time = 365*4*8
-
 dim_space = size(soil_param, 1)
 
 
@@ -25,10 +25,12 @@ dim_space = size(soil_param, 1)
 time_str = Dates.format.([time_start + i*Dates.Hour(3) for i in 0:dim_time-1], "yyyy-mm-dd HH:MM:SS")
 lon = convert(Array{Float64}, soil_param[:lon])
 lat = convert(Array{Float64}, soil_param[:lat])
-ind_senorge = convert(Array{Int64}, soil_param[:gridcel])
+id = convert(Array{Int64}, soil_param[:gridcel])
 
 
 # Create netcdf files
+
+id_desc = "ind_senorge"
 
 var = ["rainf",
        "snowf",
@@ -52,14 +54,14 @@ fn = joinpath.(path, "netcdf", var .* "_1km.nc")
 
 for i in 1:length(var)
     
-    create_netcdf(fn[i], var[i], var_atts[i], dim_time, dim_space, time_str, lon, lat, ind_senorge, "ind_senorge")
+    create_netcdf(fn[i], var[i], var_atts[i], dim_time, dim_space, time_str, id, id_desc)
     
 end
 
 
 # Loop over files
 
-for i in 1:size(soil_param,1)
+@showprogress "Computing for ..." for i in 1:size(soil_param,1)
 
     lat_str = @sprintf("%0.5f", lat[i])
     lon_str = @sprintf("%0.5f", lon[i])
@@ -76,10 +78,6 @@ for i in 1:size(soil_param,1)
     ncwrite(pres[1:dim_time],  fn[6], var[6], start=[1,i], count=[-1,1])
     ncwrite(rhum[1:dim_time],  fn[7], var[7], start=[1,i], count=[-1,1])
     ncwrite(wind[1:dim_time],  fn[8], var[8], start=[1,i], count=[-1,1])
-
-    if mod(i, 1000) == 0
-        print("Processed $i grids\n")
-    end
     
 end
 
