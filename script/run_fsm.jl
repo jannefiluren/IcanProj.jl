@@ -9,19 +9,17 @@ using ProgressMeter
 """
 Run fsm and save results to netcdf.
 """
-function run_test(path, tstart, tstop, am, cm, dm, em, hm, dt, res, grid_id_desc)
+function run_test(path, tstart, tstop, am, cm, dm, em, hm, dt, res)
 
     # Read metadata
 
-    #lon = ncread(joinpath(path, "rainf_$(res).nc"), "lon")
-
-    #lat = ncread(joinpath(path, "rainf_$(res).nc"), "lat")
-
-    grid_id = ncread(joinpath(path, "rainf_$(res).nc"), grid_id_desc)
-
+    id = ncread(joinpath(path, "rainf_$(res).nc"), "id")
+    
+    id_desc = ncgetatt(joinpath(path, "rainf_$(res).nc"), "dim_space", "id")
+    
     # Space dimension
 
-    dim_s_in = length(grid_id)
+    dim_s_in = length(id)
     
     # Read time for forcings
 
@@ -74,9 +72,7 @@ function run_test(path, tstart, tstop, am, cm, dm, em, hm, dt, res, grid_id_desc
 
     # Create output files
 
-    create_netcdf(joinpath(path, "hs_$(res).nc"), "hs", Dict("units" => "m"), dim_t_out, dim_s_out, time_str_out, grid_id, grid_id_desc)
-    
-    #create_netcdf(joinpath(path, "hs.nc"), "hs", Dict("units" => "mm/tstep"), dim_t_out, dim_s_out, time_str_out, lon, lat, grid_id)
+    create_netcdf(joinpath(path, "hs_$(res).nc"), "hs", Dict("units" => "m"), dim_t_out, dim_s_out, time_str_out, id, id_desc)
     
     # Read input and run model
 
@@ -134,20 +130,18 @@ em = 0
 hm = 0
 
 tstart = DateTime(2002, 9, 1, 0, 0, 0)
-tstop = DateTime(2005, 8, 31, 21, 0, 0)
-
-grid_id_desc = ["ind_50km", "ind_25km", "ind_10km", "ind_5km", "ind_senorge"]
+tstop  = DateTime(2005, 8, 31, 21, 0, 0)
 
 res_all = ["50km", "25km", "10km", "5km", "1km"]
 
 # Loop over all resolutions
 
-for (res, id) in zip(res_all, grid_id_desc)
-
+for res in res_all
+    
+    run_test(path, tstart, tstop, am, cm, dm, em, hm, dt, res)
+    
     print("Finished for $(res)\n")
     
-    run_test(path, tstart, tstop, am, cm, dm, em, hm, dt, res, id)
-
 end
 
 

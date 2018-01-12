@@ -12,7 +12,7 @@ using ProgressMeter
 using NetCDF
 
 
-
+#=
 # Global settings
 
 export get_options, get_wsh_info
@@ -34,7 +34,7 @@ include("data_structures.jl")
 export load_metadata, clean_metadata, get_watershed_data, get_wsh_name, resolution_ind
 
 include("metadata.jl")
-
+=#
 
 
 # Functions for handling vic data for simulations
@@ -50,7 +50,7 @@ export read_fluxes, read_all_fluxes, read_snow, read_all_snow, read_results, rea
 include("vic_io.jl")
 
 
-
+#=
 # Functions for handling vic results (processing and loading)
 
 export get_summary_tables, get_variable
@@ -64,7 +64,7 @@ include("handle_results.jl")
 export average_forcings, average_soilparams, average_vegparams
 
 include("vic_agg.jl")
-
+=#
 
 
 # Plotting functions
