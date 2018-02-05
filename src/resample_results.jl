@@ -1,24 +1,71 @@
 
 
+function link_table(file::String)
 
-"""
-Create dataframe with information for linking different scales.
-"""
-function link_results(file_fine, file_coarse, id_fine, id_coarse)
+    id = Symbol(ncgetatt(file, "dim_space", "id"))
+    
+    df_links = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
+
+    eval(:(df_nc = DataFrame($(id) = convert(Array{Int64}, ncread($(file), "id")),
+                             nc = 1:length(ncread($(file), "id")))))
+
+    df_final = join(df_links, df_nc, on = id)
+
+    return df_final
+
+end
+
+
+
+
+
+function link_table(path::String, variable::String, space_res::String)
+
+    file = get_filename(path, variable, space_res, 1)
+
+    id = Symbol(ncgetatt(file, "id", "id"))
+
+    df_links = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
+
+    eval(:(df_nc = DataFrame($(id) = convert(Array{Int64}, ncread($(file), "id")),
+                             nc = 1:length(ncread($(file), "id")))))
+
+    df_final = join(df_links, df_nc, on = id)
+
+    return df_final
+
+end
+
+
+function link_results(file_fine::String, file_coarse::String) #, id_fine, id_coarse)
 
     # Metadata table
     
     df_meta = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
-    
+
+    # Get attributes
+
+    id_fine = ncgetatt(file_fine, "id", "id")
+
+    if typeof(id_fine) == Void
+        id_fine = ncgetatt(file_fine, "dim_space", "id")
+    end
+
+    id_coarse = ncgetatt(file_coarse, "id", "id")
+
+    if typeof(id_coarse) == Void
+        id_coarse = ncgetatt(file_coarse, "dim_space", "id")
+    end
+
     # Fine resolution
 
-    df_fine = DataFrame(id_fine = convert(Array{Int64}, ncread(file_fine, id_fine)),
-                        nc_fine = 1:length(ncread(file_fine, id_fine)))
+    df_fine = DataFrame(id_fine = convert(Array{Int64}, ncread(file_fine, "id")),
+                        nc_fine = 1:length(ncread(file_fine, "id")))
 
     # Coarse resolution
 
-    df_coarse = DataFrame(id_coarse = convert(Array{Int64}, ncread(file_coarse, id_coarse)),
-                          nc_coarse = 1:length(ncread(file_coarse, id_coarse)))
+    df_coarse = DataFrame(id_coarse = convert(Array{Int64}, ncread(file_coarse, "id")),
+                          nc_coarse = 1:length(ncread(file_coarse, "id")))
 
     # Link resolutions
     
@@ -55,15 +102,33 @@ function unify_results(file_fine, file_coarse, df_links, variable)
     
     var_fine = ncread(file_fine, variable)
 
+    dim_space = ncread(file_fine, "id")
+
+    if size(var_fine, 2) != length(dim_space)
+        var_fine = var_fine'
+    end
+    
     var_coarse = ncread(file_coarse, variable)
+
+    dim_space = ncread(file_coarse, "id")
+
+    if size(var_coarse, 2) != length(dim_space)
+        var_coarse = var_coarse'
+    end
 
     var_agg = fill(0.0, size(var_coarse))
 
-    for row in eachrow(df_links)
-        var_agg[:, row[:nc_coarse]] += var_fine[:, row[:nc_fine]] / row[:n_sum]
-    end
+    ngrids = fill(0.0, size(var_coarse, 2))
 
-    return var_coarse, var_agg
+    for row in eachrow(df_links)
+        
+        var_agg[:, row[:nc_coarse]] += var_fine[:, row[:nc_fine]] / row[:n_sum]
+
+        ngrids[row[:nc_coarse]] += 1 
+
+    end
+    
+    return var_coarse, var_agg, ngrids
     
 end
 
@@ -71,11 +136,11 @@ end
 """
 Project results to a map using senorge extents.
 """
-function project_results(values, df_links)
+function project_results(values, df_links, on = :nc_coarse)
 
     map_values = fill(NaN, 1550, 1195)
 
-    map_values[df_links[:ind_julia]] = values[df_links[:nc_coarse]]
+    map_values[df_links[:ind_julia]] = values[df_links[on]]
 
     return map_values
 
@@ -98,69 +163,6 @@ end
 
 
 
-
-
-
-
-
-
-
-#=
-
-using DataFrames
-using NetCDF
-using IcanProj
-using PyPlot
-using NveData
-
-
-function link_resolutions(file_nc, id_desc)
-
-    df_meta = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
-    
-    df_left = DataFrame(ind_nc = 1:length(ncread(file_nc, "dim_space")),
-                        id = convert(Array{Int64}, ncread(file_nc, String(id_desc))))
-
-    df_right = DataFrame(id = df_meta[id_desc],
-                         ind_julia = df_meta[:ind_julia])
-
-    df = join(df_left, df_right, on=:id)
-
-    return(df)
-    
-end
-
-
-function resample_results!(grid, file_nc, timeload, variable, df)
-    
-    time_nc = ncread(file_nc, "time_str")
-    
-    itime = find(time_nc .== Dates.format(timeload, "yyyy-mm-dd HH:MM:SS"))[1]
-
-    variable = ncread(file_nc, variable, start = [itime, 1], count = [1,-1])[:]
-
-    for row in eachrow(df)
-
-        grid[row[:ind_julia]] = variable[row[:ind_nc]]
-
-    end
-
-    return nothing
-    
-end
-
-
-function resample_results(file_nc, timeload, variable, df)
-
-    grid = fill(NaN, 1550, 1195)
-    
-    resample_results!(grid, file_nc, timeload, variable, df)
-
-    return(grid)
-
-end
-
-=#
 
 
 

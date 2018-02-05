@@ -1,27 +1,27 @@
 
 using IcanProj
 using NetCDF
-using ProgressMeter
 using DataFrames
 using PyPlot
 
 
 # Settings
 
-file_fine = "/data02/Ican/vic_sim/fsm_past_1km/netcdf_old/hs_1km.nc"
+variable = "swe"
 
-file_coarse = "/data02/Ican/vic_sim/fsm_past_1km/netcdf_old/hs_50km.nc"
+file_fine = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/fsm2/results_1/$(variable)_1km.nc"
 
-id_fine = "ind_senorge"
+file_coarse = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/fsm2/results_1/$(variable)_50km.nc"
 
-id_coarse = "ind_50km"
 
-variable = "hs"
+#file_fine = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/forcings_st/$(variable)_1km.nc"
+
+#file_coarse = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/forcings_st/$(variable)_50km.nc"
 
 
 # Load data
 
-df_links = link_results(file_fine, file_coarse, id_fine, id_coarse)
+df_links = link_results(file_fine, file_coarse)
 
 hs_coarse, hs_aggregated = unify_results(file_fine, file_coarse, df_links, variable)
 
@@ -34,9 +34,9 @@ meanref = mean(hs_aggregated, 1)
 
 meancmp = mean(hs_coarse, 1)
 
-nrmse = rmse ./ meanref
+nrmse = rmse #./ meanref
 
-bias = meancmp ./ meanref
+bias = meancmp - meanref
 
 
 # Project to map
@@ -51,20 +51,20 @@ nrmse_map = project_results(nrmse[:], df_links)
 
 bias_map = project_results(bias[:], df_links)
 
-
+#=
 # Plot maps
 
 figure()
 imshow(meanref_map)
 cb = colorbar()
-cb[:set_label]("Snow depth (m)")
+cb[:set_label](variable)
 title("Fine scale run")
 
 
 figure()
 imshow(meancmp_map)
 cb = colorbar()
-cb[:set_label]("Snow depth (m)")
+cb[:set_label](variable)
 title("Coarse scale run")
 
 
@@ -72,11 +72,27 @@ figure()
 imshow(bias_map)
 cb = colorbar()
 cb[:set_label]("Bias (-)")
-title("Snow depth - coarse divded by fine scale")
+title("$(variable) - coarse divded by fine scale")
 
 
 figure()
 imshow(nrmse_map)
 cb = colorbar()
 cb[:set_label]("NRMSE (-)")
-title("Snow depth")
+title(variable)
+=#
+
+
+
+for icell in 1:100
+
+    plot(hs_coarse[:,icell], label = "coarse")
+    plot(hs_aggregated[:,icell], label = "fine")
+
+    legend()
+
+    sleep(2)
+
+    close("all")
+
+end

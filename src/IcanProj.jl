@@ -77,7 +77,7 @@ include("plots/analysis_elevation.jl")
 
 # Data handling functions
 
-export create_netcdf
+export create_netcdf, get_filename, load_result, load_time, load_time_slice, load_space_slice
 
 include("data_netcdf.jl")
 
@@ -85,7 +85,7 @@ include("data_netcdf.jl")
 
 # Handle fsm results
 
-export link_results, unify_results, project_results
+export link_results, unify_results, project_results, link_table
 
 include("resample_results.jl")
 

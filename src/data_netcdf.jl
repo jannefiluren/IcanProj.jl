@@ -1,35 +1,4 @@
 
-#=
-"""
-Create netcdf file for one variable.
-"""
-function create_netcdf(filename, var, var_atts, dim_time, dim_space, time_str, id_space)
-
-    
-    time = collect(1:dim_time)
-    space = collect(1:dim_space)
-
-    
-    timeatts = Dict("units" => "none")
-    spaceatts = Dict("units" => "none")
-
-    nccreate(filename, var, "dim_time", time, timeatts, "dim_space", space, spaceatts, atts = var_atts)
-    nccreate(filename, "time_str", "dim_time", time, t=String)
-    nccreate(filename, "id_desc", "dim_space", space)
-
-    ncwrite(time_str, filename, "time_str")
-    ncwrite(id, filename, "id_desc")
-
-    ncclose()
-
-    return nothing
-
-end
-=#
-
-
-
-
 """
 Create netcdf file for one variable.
 """
@@ -55,61 +24,99 @@ function create_netcdf(filename, var, var_atts, dim_time, dim_space, time_str, i
 end
 
 
-
-
-
-#=
 """
-Create netcdf file for one variable.
+Get filename to one netcdf with results.
 """
-function create_netcdf(filename, var, var_atts, dim_time, dim_space, time_str, lon, lat, id, id_desc)
+function get_filename(path, variable, spatial_res, iexp)
 
-    time = collect(1:dim_time)
-    timeatts = Dict("units" => "none")
+    file = joinpath(path, "results_$(iexp)", "$(variable)_$(spatial_res).nc")
     
-    space = collect(1:dim_space)
-    spaceatts = Dict("units" => "none")
+    return file
+    
+end
 
-    nccreate(filename, var, "dim_time", time, timeatts, "dim_space", space, spaceatts, atts = var_atts)
-    nccreate(filename, "time_str", "dim_time", time, t=String)
-    nccreate(filename, "lon", "dim_space", space)
-    nccreate(filename, "lat", "dim_space", space)
-    nccreate(filename, id_desc, "dim_space", space)
 
-    ncwrite(time_str, filename, "time_str")
-    ncwrite(lon, filename, "lon")
-    ncwrite(lat, filename, "lat")
-    ncwrite(id, filename, id_desc)
+"""
+Load results from one netcdf.
+"""
+function load_result(path, variable, spatial_res, iexp)
+    
+    file = get_filename(path, variable, spatial_res, iexp)
 
-    ncclose()
+    res = ncread(file, variable)
 
-    return nothing
+    return res
 
 end
 
 
 """
-Create netcdf file for one variable.
+Load time from one netcdf.
 """
-function create_netcdf(filename, var, var_atts, dim_time, dim_space, time_str, id, id_desc)
+function load_time(path, variable, spatial_res)
 
-    time = collect(1:dim_time)
-    timeatts = Dict("units" => "none")
-    
-    space = collect(1:dim_space)
-    spaceatts = Dict("units" => "none")
+    file = get_filename(path, variable, spatial_res, 1)
 
-    nccreate(filename, var, "dim_time", time, timeatts, "dim_space", space, spaceatts, atts = var_atts)
-    nccreate(filename, "time_str", "dim_time", time, t=String)
-    nccreate(filename, id_desc, "dim_space", space)
+    time = ncread(file, "time_array")
 
-    ncwrite(time_str, filename, "time_str")
-    ncwrite(id, filename, id_desc)
+    time = [DateTime(time[1,i],time[2,i],time[3,i],time[4,i]) for i in 1:size(time,2)]
 
-    ncclose()
-
-    return nothing
+    return time
 
 end
 
-=#
+
+"""
+Load a time slice from a results netcdf.
+"""
+function load_time_slice(path, variable, spatial_res, iexp, itime = [])
+
+    tmp = load_result(path, variable, spatial_res, 1)
+
+    data = fill(0.0, size(tmp,1), length(iexp))
+
+    for i in iexp
+
+        @show i
+
+        tmp = load_result(path, variable, spatial_res, i)
+
+        if isempty(itime)
+            data[:, i] = mean(tmp, 2)
+        else
+            data[:, i] = tmp[:, itime]
+        end
+        
+    end
+
+    return data
+
+end
+
+
+"""
+Load a space slice from a results netcdf.
+"""
+function load_space_slice(path, variable, spatial_res, iexp, ispace = [])
+
+    tmp = load_result(path, variable, spatial_res, 1)
+
+    data = fill(0.0, length(iexp), size(tmp, 2))
+
+    for i in iexp
+
+        @show i
+
+        tmp = load_result(path, variable, spatial_res, i)
+
+        if isempty(ispace)
+            data[i, :] = mean(tmp, 1)
+        else
+            data[i, :] = tmp[ispace, :]
+        end
+        
+    end
+
+    return data
+
+end
