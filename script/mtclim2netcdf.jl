@@ -4,9 +4,9 @@ using ProgressMeter
 
 # Settings
 
-path = "/data02/Ican/vic_sim/fsm_past_1km"
+path = "/data02/Ican/vic_sim/fsm_simulations"
 
-time_start = DateTime(2002,1,1)
+time_start = DateTime(2008,1,1)
 
 
 # Load soil parameters

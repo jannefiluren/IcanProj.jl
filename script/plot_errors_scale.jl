@@ -1,55 +1,122 @@
 
-using IcanProj
-using NetCDF
+
 using DataFrames
+using JFSM2
 using PyPlot
 
+function load_results()
 
-function mean_error(res)
+    res_all = Dict()
 
-    # Settings
+    for spaceres in ["5km", "10km", "25km", "50km"]
 
-    file_fine = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/tmp/results_1/swe_1km.nc"
+        res_all[spaceres] = readtable(Pkg.dir("IcanProj", "data", "table_errors_$(spaceres).txt"))
 
-    file_coarse = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/tmp/results_1/swe_$(res).nc"
+    end
 
-    variable = "swe"
-
-    # Load data
-
-    df_links = link_results(file_fine, file_coarse)
-
-    hs_coarse, hs_fine_agg, ngrids = unify_results(file_fine, file_coarse, df_links, variable)
-
-    # Compute errors
-
-    rmse = sqrt.(mean((hs_coarse - hs_fine_agg).^2, 1))
-
-    rmse_mean = sum(rmse[:] .* ngrids[:]/sum(ngrids[:]))
-
-    return rmse_mean
+    return res_all
     
 end
 
 
+function error_matrix(res_all, variable, measure)
+
+    spaceres = ["5km", "10km", "25km", "50km"]
+
+    cfgs = 1:32
+
+    data = fill(0.0, length(cfgs), length(spaceres))
+
+    for j in eachindex(spaceres)
+
+        df_res = res_all[spaceres[j]]
+
+        for i in cfgs
+
+            tmp = df_res[Symbol("$(measure)_$(variable)_cfg$(cfgs[i])")]
+
+            tmp = tmp[!isnan.(tmp)]
+
+            data[i,j] = median(tmp) #df_res[Symbol("$(measure)_$(variable)_cfg$(cfgs[i])")])
+
+        end
+        
+    end
+
+    return data, spaceres
+
+end
 
 
-res_all = ["5km", "10km", "25km", "50km"]
+function plot_error_scales(data, df_cfg, plottitle, ylimits)
 
-rmse_mean = []
+    data = data'
 
+    exchng_off = convert(Array{Bool}, df_cfg[:exchng] .== 0)
+    exchng_on  = convert(Array{Bool}, df_cfg[:exchng] .== 1)
 
-for res in res_all
+    figure(figsize = (5, 4))
 
-    push!(rmse_mean, mean_error(res))
+    plot(collect(1:size(data,1)), data, color = "gray")
+
+    fill_between(collect(1:size(data,1)),
+                 maximum(data[:, exchng_off], 2)[:],
+                 minimum(data[:, exchng_off], 2)[:],
+                 facecolor = "red", edgecolor = "red", alpha = 0.5,
+                 label = "Exchng = 0")
+
+    fill_between(collect(1:size(data,1)),
+                 maximum(data[:, exchng_on], 2)[:],
+                 minimum(data[:, exchng_on], 2)[:],
+                 facecolor = "blue", edgecolor = "blue", alpha = 0.5,
+                 label = "Exchng = 1")
+
+    xticks(collect(1:size(data,1)), ["5km", "10km", "25km", "50km"])
+
+    title(plottitle)
+
+    ylim(ylimits)
+
+    ylabel("NSE (-)")
+    
+    legend()
     
 end
 
 
-figure()
-scatter(collect(0:length(res_all)-1), rmse_mean)
-plt[:xticks](collect(0:length(res_all)-1), res_all)
-xlabel("Spatial resolution")
-#ylabel("RMSE (m)")
-#title("Snow depth")
-ylim([0, maximum(rmse_mean)+0.02])
+# Plot results
+
+res_all = load_results()
+
+df_cfg = cfg_table()
+
+figpath = Pkg.dir("IcanProj", "plots", "error_scales")
+
+tmp = [("swe", "SWE"),
+       ("snowdepth", "Snowdepth"),
+       ("rnet", "Net radiation")]
+
+for (v, t) in tmp
+
+    nseres, spaceres = error_matrix(res_all, v, "nse")
+
+    plot_error_scales(nseres, df_cfg, t, (0.95, 1.0))
+
+    savefig(joinpath(figpath, "$(v)_error.png"), dpi = 200)
+    
+end
+
+
+tmp = [("hatmo", "Sensible heat flux"),
+       ("latmo", "Latent heat flux"),
+       ("melt", "Surface melt")]
+
+for (v, t) in tmp
+
+    nseres, spaceres = error_matrix(res_all, v, "nse")
+
+    plot_error_scales(nseres, df_cfg, t, (0.3, 1.0))
+
+    savefig(joinpath(figpath, "$(v)_error.png"), dpi = 200)
+    
+end

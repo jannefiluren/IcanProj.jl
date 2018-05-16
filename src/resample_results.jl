@@ -127,6 +127,8 @@ function unify_results(file_fine, file_coarse, df_links, variable)
         ngrids[row[:nc_coarse]] += 1 
 
     end
+
+    ncclose()
     
     return var_coarse, var_agg, ngrids
     

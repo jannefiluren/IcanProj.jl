@@ -4,6 +4,24 @@ using NveData
 using PyPlot
 using DataFrames
 
+
+
+function resolution_ind(res, nrow, ncol)
+    @assert 50%res==0
+    ind = fill(-9999, nrow, ncol)
+    nrow = nrow-nrow%res-res+1
+    ncol = ncol-ncol%res-res+1
+    counter = 1
+    for irow = 1:res:nrow, icol = 1:res:ncol
+        ind[irow:irow+res-1, icol:icol+res-1] = counter
+        counter += 1
+    end
+    return ind
+end
+
+
+
+
 # Settings
 
 path = "/data02/Ican/vic_sim/fsm_past_1km"
@@ -50,7 +68,8 @@ ind_50km[ind_50km .< 0] = NA
 
 df_left = DataFrame(ind_senorge = soil_param[:gridcel],
                     lon = soil_param[:lon],
-                    lat = soil_param[:lat])
+                    lat = soil_param[:lat],
+                    elev =soil_param[:elev])
 
 df_right = DataFrame(ind_senorge = ind_senorge[:],
                      ind_julia = ind_julia[:],

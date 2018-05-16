@@ -20,7 +20,7 @@ end
 
 function add_variability(df_all)
 
-    variables = ["ilwr", "iswr", "pres", "rainf", "rhum", "snowf", "tair", "wind"]
+    variables = ["ilwr", "iswr", "pres", "rainf", "rhum", "snowf", "tair", "wind", "prec"]
 
     for variable in variables
 
@@ -82,6 +82,9 @@ end
 
 df_all = readtable(Pkg.dir("IcanProj", "data", "forcings_summary.txt"))
 
+df_all[:prec_mean] = min.(365*8(df_all[:rainf_mean] + df_all[:snowf_mean]), 4500)
+
+
 df_all = add_variability(df_all)
 
 figpath = Pkg.dir("IcanProj", "plots", "forcings")
@@ -94,7 +97,8 @@ variable = ["ilwr",
             "rhum",   
             "snowf",  
             "tair",   
-            "wind"]   
+            "wind",
+            "prec"]   
 
 cb_unit = ["(W/m2)",
            "(W/m2)",
@@ -102,8 +106,9 @@ cb_unit = ["(W/m2)",
            "(mm/timestep)",
            "(%)",
            "(mm/timestep)",
-           "(K)",
-           "(m/s)"]
+           "(C)",
+           "(m/s)",
+           "(mm/year)"]
 
 title_label = ["Incoming longwave radiation",
                "Incoming shortwave radiation",
@@ -112,7 +117,10 @@ title_label = ["Incoming longwave radiation",
                "Relative humidity",
                "Snowfall",
                "Air temperature",
-               "Wind speed"]
+               "Wind speed",
+               "Precipitation"]
+
+# Plot standard deviations
 
 cb_label = "Standard deviation"
 
@@ -124,6 +132,8 @@ for (v, cu, t) in zip(variable_std, cb_unit, title_label)
     
 end
 
+# Plot averages
+
 cb_label = "Average"
 
 variable_mean = convert.(Symbol, variable .* "_mean")
@@ -133,7 +143,3 @@ for (v, cu, t) in zip(variable_mean, cb_unit, title_label)
     plot_map(df_all, v, cb_label, cu, t, figpath)
     
 end
-
-
-
-

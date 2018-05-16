@@ -26,7 +26,9 @@ function plot_hydrol_exchng(time, data, df_cfg, fig_title)
     exchng_off = convert(Array{Bool}, df_cfg[:exchng] .== 0)
     exchng_on  = convert(Array{Bool}, df_cfg[:exchng] .== 1)
 
-    figure(figsize = (9, 6))
+    figure(figsize = (7, 5))
+
+    #figure()
 
     fill_between(time,
                  maximum(data[hydrol_off .& exchng_off,:], 1)[:],
@@ -43,13 +45,13 @@ function plot_hydrol_exchng(time, data, df_cfg, fig_title)
     fill_between(time,
                  maximum(data[hydrol_off .& exchng_on,:], 1)[:],
                  minimum(data[hydrol_off .& exchng_on,:], 1)[:],
-                 facecolor = "blue", edgecolor = "blue", alpha = 0.5,
+                 facecolor = "yellow", edgecolor = "yellow", alpha = 0.5,
                  label = "Hydrol=0 & Exchng=1")
 
     fill_between(time,
                  maximum(data[hydrol_on .& exchng_on,:], 1)[:],
                  minimum(data[hydrol_on .& exchng_on,:], 1)[:],
-                 facecolor = "red", edgecolor = "red", alpha = 0.5,
+                 facecolor = "magenta", edgecolor = "magenta", alpha = 0.5,
                  label = "Hydrol=1 & Exchng=1")
 
     legend(loc=2)
@@ -62,7 +64,7 @@ end
 
 
 
-respath = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/new"
+respath = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/fsm2"
 
 figpath = Pkg.dir("IcanProj", "plots", "config_ts")
 
@@ -70,7 +72,7 @@ variable = "swe"
 
 iexp = 1:32
 
-for spatial_res in ["5km", "50km"]
+for spatial_res in ["1km", "50km"]
 
     time = load_time(respath, variable, spatial_res)
 
@@ -92,11 +94,11 @@ for spatial_res in ["5km", "50km"]
 
     plot_hydrol_exchng(time, datamin, df_cfg, fig_title)
 
-    savefig(joinpath(figpath, "datamin_$(spatial_res).png"))
+    savefig(joinpath(figpath, "datamin_$(spatial_res).png"), bbox_inches="tight", dpi=200)
     
     plot_hydrol_exchng(time, datamax, df_cfg, fig_title)
 
-    savefig(joinpath(figpath, "datamax_$(spatial_res).png"))
+    savefig(joinpath(figpath, "datamax_$(spatial_res).png"), bbox_inches="tight", dpi=200)
 
 end
 
