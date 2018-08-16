@@ -1,18 +1,26 @@
 # ICAN project repository
 
-This repository contains code for performing simulations and analysis using VIC.
+This repository contains code for performing simulations and analysis for the ICAN project.
 
-## Simulation results by vic
+## Data preparation
 
-The vic simulations are stored on l-klima in this folder:
+- Run mtclim using this r-code: [ican_data](https://github.com/jmgnve/ican_data), and in particular the script `mtclim_for_fsm.R`.
 
-`/data02/Ican/vic_sim/`
+- Convert binary outputs to netcdf´s using `mtclim2netcdf.jl`.
 
-The subfolder `/past_1km/` contains simulations for the historic period spanning from 1982-01-01 to 2012-12-31.
+- Convert to correct dimensions using `swap_dim_netcdf.jl` and add a time array `time_array_netcdf.jl`.
 
-## Notes about the vic model
+## Running fsm
 
-We are using VIC.4.2.d., which is documented [here](http://vic.readthedocs.io/en/vic.4.2.d/) and source code available [here](https://github.com/UW-Hydro/VIC/tree/VIC.4.2.b). An list of possible output variables is [here](http://vic.readthedocs.io/en/vic.4.2.d/Documentation/OutputVarList/).
+- Run the model using `start.jl` from this [FSM2](https://github.com/jmgnve/FSM2/tree/netcdf) repository.
+
+## Processing model outputs
+
+- Errors for different spatial scales: `table_error_resolutions.jl`.
+
+## Notes about the MTCLIM model
+
+We are using VIC.4.2.d. for MTCLIM, which is documented [here](http://vic.readthedocs.io/en/vic.4.2.d/) and source code available [here](https://github.com/UW-Hydro/VIC/tree/VIC.4.2.b). An list of possible output variables is [here](http://vic.readthedocs.io/en/vic.4.2.d/Documentation/OutputVarList/).
  
 - [Documentation of meteorological forcings](http://vic.readthedocs.io/en/vic.4.2.d/Documentation/ForcingData/) foc vic.
 - [Documentation of soil parameter file](http://vic.readthedocs.io/en/vic.4.2.d/Documentation/SoilParam/) for vic.
