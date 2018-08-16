@@ -2,7 +2,7 @@ using NetCDF
 using PyPlot
 
 
-path = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/forcings_st"
+path = "/data02/Ican/vic_sim/fsm_simulations/netcdf/forcings_st"
 
 
 for variable in ["ilwr", "iswr", "pres", "rainf", "snowf", "rhum", "tair", "wind"]

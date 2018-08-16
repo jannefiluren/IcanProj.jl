@@ -2,6 +2,7 @@
 using IcanProj
 using NetCDF
 using DataFrames
+using CSV
 
 
 function compute_statistics(var_coarse, var_ref, mask)
@@ -60,6 +61,8 @@ function results_table(path, cfgs, variables, spaceres)
     df_res[idname] = ids
 
     for c in cfgs
+
+        println("Running cfg $(c)")
         
         # Mask indicating presence of snow
 
@@ -109,7 +112,7 @@ end
 
 
 
-path = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/fsm2"
+path = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres"
 
 cfgs = 1:32
 
@@ -117,11 +120,13 @@ variables = ["gsurf", "hatmo", "latmo", "melt", "rnet", "rof", "snowdepth", "swe
 
 for spaceres in ["5km", "10km", "25km", "50km"]
 
+    println("Running spaceres $(spaceres)")
+
     df = results_table(path, cfgs, variables, spaceres)
 
     filesave = Pkg.dir("IcanProj", "data", "table_errors_$(spaceres).txt")
 
-    writetable(filesave, df)
+    CSV.write(filesave, df)
 
 end
 

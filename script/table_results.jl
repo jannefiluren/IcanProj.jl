@@ -2,11 +2,12 @@ using IcanProj
 using NetCDF
 using DataFrames
 using ProgressMeter
+using CSV
 
 
 function results_table(path)
 
-    df_all = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
+    df_all = CSV.read(Pkg.dir("IcanProj", "data", "df_links.csv"))
     
     for variable in ["gsurf", "hatmo", "latmo", "melt", "rnet", "rof", "snowdepth", "swe"], #, "tsoil", "tsurf"],
         spaceres in ["1km", "50km"],
@@ -41,11 +42,11 @@ function results_table(path)
 end
 
 
-path = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/fsm2"
+path = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres"
 
 df_all = results_table(path)
 
 file = Pkg.dir("IcanProj", "data", "table_results.txt")
 
-writetable(file, df_all)
+CSV.write(file, df_all)
 

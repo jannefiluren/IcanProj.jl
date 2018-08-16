@@ -17,7 +17,7 @@ function aggregate_forcings(path, var, res)
     
     # Metadata from input netcdfs
 
-    file_in = joinpath(path, "$(var)_1km.nc")
+    file_in = joinpath(path, "forcings_ts/$(var)_1km.nc")
 
     nc_in = Dict("ind_senorge" => ncread(file_in, "id"),
                  "time_str" => ncread(file_in, "time_str"),
@@ -25,7 +25,7 @@ function aggregate_forcings(path, var, res)
 
     # Create netcdfs
 
-    file_out = joinpath(path, "$(var)_$(res).nc")
+    file_out = joinpath(path, "forcings_ts/$(var)_$(res).nc")
 
     var_atts = Dict("units" => nc_in["var_atts"])
 
@@ -79,7 +79,7 @@ end
 
 # Settings
 
-path = "/data02/Ican/vic_sim/fsm_past_1km/netcdf"
+path = "/data02/Ican/vic_sim/fsm_simulations/netcdf"
 
 var_all = ["ilwr", "iswr", "pres", "rainf", "snowf", "wind", "rhum", "tair"]
 

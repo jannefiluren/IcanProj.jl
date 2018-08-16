@@ -2,13 +2,15 @@
 
 # Swap time and space dimensions in netcdfs with forcing data
 
-path_ts = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/forcings_ts"
+path_ts = "/data02/Ican/vic_sim/fsm_simulations/netcdf/forcings_ts"
 
-path_st = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/forcings_st"
+path_st = "/data02/Ican/vic_sim/fsm_simulations/netcdf/forcings_st"
 
 files = readdir(path_ts)
 
 for file in files
+
+    println("Running $(file)")
 
     file_ts = joinpath(path_ts, file)
 

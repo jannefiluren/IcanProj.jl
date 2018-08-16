@@ -74,7 +74,7 @@ function average_soilparams(soil_param, wsh_single, resolution)
     df_final = DataFrame(param_tmp)
     names!(df_final, names(soil_param))
 
-    sort!(df_final, cols = :gridcel)
+    sort!(df_final, :gridcel)
 
     return df_final
     
@@ -113,7 +113,7 @@ function average_vegparams(veg_param, wsh_single, resolution)
 
     names!(df_final, names(veg_param))
 
-    sort!(df_final, cols = :gridcel)
+    sort!(df_final, :gridcel)
 
     return df_final
     

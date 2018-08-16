@@ -17,7 +17,7 @@ function mean_elevation(df)
 
         df_tmp = aggregate(df_tmp, indname, mean)
 
-        rename!(df_tmp, :elev_mean, meanname)
+        rename!(df_tmp, :elev_mean => meanname)
 
         df = join(df, df_tmp, on = indname)
         
@@ -82,7 +82,7 @@ function plot_map(df, variable, cb_label, cb_unit, title_label, figpath)
 end
 
 
-df_links = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
+df_links = CSV.read(Pkg.dir("IcanProj", "data", "df_links.csv"))
 
 df_links = mean_elevation(df_links)
 

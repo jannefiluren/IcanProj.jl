@@ -41,7 +41,7 @@ function link_results(file_fine::String, file_coarse::String) #, id_fine, id_coa
 
     # Metadata table
     
-    df_meta = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
+    df_meta = CSV.read(Pkg.dir("IcanProj", "data", "df_links.csv"))
 
     # Get attributes
 
@@ -88,7 +88,7 @@ function link_results(file_fine::String, file_coarse::String) #, id_fine, id_coa
 
     # Sort results
     
-    sort!(df_links, cols = [:id_fine])
+    sort!(df_links, [:id_fine])
 
     return(df_links)
     

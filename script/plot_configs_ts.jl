@@ -64,7 +64,7 @@ end
 
 
 
-respath = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/fsm2"
+respath = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres"
 
 figpath = Pkg.dir("IcanProj", "plots", "config_ts")
 
