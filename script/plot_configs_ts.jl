@@ -4,13 +4,14 @@ using NetCDF
 using DataFrames
 using PyPlot
 using JFSM2
+using Statistics
 
 
 function compute_statistics(data)
 
-    res = Dict("mean" => mean(data, 2),
-               "std" => std(data, 2),
-               "cv" => std(data, 2) ./ mean(data, 2))
+    res = Dict("mean" => mean(data, dims = 2),
+               "std" => std(data, dims = 2),
+               "cv" => std(data, dims = 2) ./ mean(data, dims = 2))
 
     return res
     
@@ -31,26 +32,26 @@ function plot_hydrol_exchng(time, data, df_cfg, fig_title)
     #figure()
 
     fill_between(time,
-                 maximum(data[hydrol_off .& exchng_off,:], 1)[:],
-                 minimum(data[hydrol_off .& exchng_off,:], 1)[:],
+                 maximum(data[hydrol_off .& exchng_off,:], dims = 1)[:],
+                 minimum(data[hydrol_off .& exchng_off,:], dims = 1)[:],
                  facecolor = "gray", edgecolor = "gray", alpha = 0.5,
                  label = "Hydrol=0 & Exchng=0")
 
     fill_between(time,
-                 maximum(data[hydrol_on .& exchng_off,:], 1)[:],
-                 minimum(data[hydrol_on .& exchng_off,:], 1)[:],
+                 maximum(data[hydrol_on .& exchng_off,:], dims = 1)[:],
+                 minimum(data[hydrol_on .& exchng_off,:], dims = 1)[:],
                  facecolor = "green", edgecolor = "green", alpha = 0.5,
                  label = "Hydrol=1 & Exchng=0")
 
     fill_between(time,
-                 maximum(data[hydrol_off .& exchng_on,:], 1)[:],
-                 minimum(data[hydrol_off .& exchng_on,:], 1)[:],
+                 maximum(data[hydrol_off .& exchng_on,:], dims = 1)[:],
+                 minimum(data[hydrol_off .& exchng_on,:], dims = 1)[:],
                  facecolor = "yellow", edgecolor = "yellow", alpha = 0.5,
                  label = "Hydrol=0 & Exchng=1")
 
     fill_between(time,
-                 maximum(data[hydrol_on .& exchng_on,:], 1)[:],
-                 minimum(data[hydrol_on .& exchng_on,:], 1)[:],
+                 maximum(data[hydrol_on .& exchng_on,:], dims = 1)[:],
+                 minimum(data[hydrol_on .& exchng_on,:], dims = 1)[:],
                  facecolor = "magenta", edgecolor = "magenta", alpha = 0.5,
                  label = "Hydrol=1 & Exchng=1")
 
@@ -66,7 +67,7 @@ end
 
 respath = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres"
 
-figpath = Pkg.dir("IcanProj", "plots", "config_ts")
+figpath = joinpath(pathof(IcanProj), "..", "..", "plots", "config_ts")
 
 variable = "swe"
 
@@ -80,9 +81,9 @@ for spatial_res in ["1km", "50km"]
 
     stats = compute_statistics(data)
 
-    imin = indmin(stats["cv"])
+    imin = argmin(dropdims(stats["cv"], dims = 2))
 
-    imax = indmax(stats["cv"])
+    imax = argmax(dropdims(stats["cv"], dims = 2))
 
     datamin = load_space_slice(respath, variable, spatial_res, iexp, imin)
 

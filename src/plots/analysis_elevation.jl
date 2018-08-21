@@ -10,7 +10,7 @@ Plot elevation range against different spatial resolutions.
 """
 function analysis_elevation()
 
-    @load Pkg.dir("IcanProj", "data", "wsh_info.jld2") wsh_info
+    # @load Pkg.dir("IcanProj", "data", "wsh_info.jld2") wsh_info
 
     # Watersheds and resolutions
 

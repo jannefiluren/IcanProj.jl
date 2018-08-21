@@ -1,16 +1,15 @@
 module IcanProj
 
-
-using ExcelReaders
 using DataFrames
 using NveData
-using Query
-using JLD2
 using FileIO
 using PyPlot
 using ProgressMeter
 using NetCDF
 using CSV
+using Printf
+using Dates
+using Statistics
 
 
 #=

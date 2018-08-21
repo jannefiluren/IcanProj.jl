@@ -82,7 +82,7 @@ function load_time_slice(path, variable, spatial_res, iexp, itime = [])
         tmp = load_result(path, variable, spatial_res, i)
 
         if isempty(itime)
-            data[:, i] = mean(tmp, 2)
+            data[:, i] = mean(tmp, dims=2)
         else
             data[:, i] = tmp[:, itime]
         end
