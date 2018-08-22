@@ -5,6 +5,8 @@ using PyPlot
 using DataFrames
 using PyCall
 using JFSM2
+using CSV
+using Statistics
 
 import IcanProj.project_results
 
@@ -64,9 +66,11 @@ end
 
 # Load results
 
-df_res = readtable(Pkg.dir("IcanProj", "data", "table_errors_50km.txt"))
+path = dirname(pathof(IcanProj))
 
-df_links = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
+df_res = CSV.read(joinpath(path, "..", "data", "table_errors_50km.txt"))
+
+df_links = CSV.read(joinpath(path, "..", "data", "df_links.csv"))
 
 df_all = join(df_links, df_res, on = :ind_50km)
 
@@ -81,7 +85,7 @@ for variable in ["swe", "latmo", "hatmo", "melt"]
 
     colnames = Symbol.("nse_$(variable)_cfg" .* string.(cfg_subset[:cfg]))
 
-    df_all[Symbol("nse_$(variable)_exchng0")] =  mean(convert(Array, df_all[colnames]), 2)[:]
+    df_all[Symbol("nse_$(variable)_exchng0")] =  mean(convert(Array, df_all[colnames]), dims = 2)[:]
 
 end
 
@@ -94,7 +98,7 @@ for variable in ["swe", "latmo", "hatmo", "melt"]
 
     colnames = Symbol.("nse_$(variable)_cfg" .* string.(cfg_subset[:cfg]))
 
-    df_all[Symbol("nse_$(variable)_exchng1")] =  mean(convert(Array, df_all[colnames]), 2)[:]
+    df_all[Symbol("nse_$(variable)_exchng1")] =  mean(convert(Array, df_all[colnames]), dims = 2)[:]
 
 end
 
@@ -110,7 +114,7 @@ info = [(:nse_swe_exchng0,   "NSE", "(-)", "SWE exchnge = 0"),
         (:nse_hatmo_exchng1, "NSE", "(-)", "Hatmo exchnge = 1"),
         (:nse_melt_exchng1,  "NSE", "(-)", "Melt exchnge = 1")]
 
-figpath = Pkg.dir("IcanProj", "plots", "error_maps")
+figpath = joinpath("..", "plots", "error_maps")
 
 for (v, cl, cu, t) in info
 
