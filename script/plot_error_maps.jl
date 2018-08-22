@@ -114,7 +114,7 @@ info = [(:nse_swe_exchng0,   "NSE", "(-)", "SWE exchnge = 0"),
         (:nse_hatmo_exchng1, "NSE", "(-)", "Hatmo exchnge = 1"),
         (:nse_melt_exchng1,  "NSE", "(-)", "Melt exchnge = 1")]
 
-figpath = joinpath("..", "plots", "error_maps")
+figpath = joinpath(path, "..", "plots", "error_maps")
 
 for (v, cl, cu, t) in info
 
