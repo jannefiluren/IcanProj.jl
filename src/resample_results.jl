@@ -4,7 +4,7 @@ function link_table(file::String)
 
     id = Symbol(ncgetatt(file, "dim_space", "id"))
     
-    df_links = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
+    df_links = CSV.read(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv"))
 
     eval(:(df_nc = DataFrame($(id) = convert(Array{Int64}, ncread($(file), "id")),
                              nc = 1:length(ncread($(file), "id")))))
@@ -25,7 +25,7 @@ function link_table(path::String, variable::String, space_res::String)
 
     id = Symbol(ncgetatt(file, "id", "id"))
 
-    df_links = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
+    df_links = CSV.read(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv"))
 
     eval(:(df_nc = DataFrame($(id) = convert(Array{Int64}, ncread($(file), "id")),
                              nc = 1:length(ncread($(file), "id")))))
@@ -41,7 +41,7 @@ function link_results(file_fine::String, file_coarse::String) #, id_fine, id_coa
 
     # Metadata table
     
-    df_meta = CSV.read(Pkg.dir("IcanProj", "data", "df_links.csv"))
+    df_meta = CSV.read(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv"))
 
     # Get attributes
 

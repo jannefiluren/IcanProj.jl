@@ -11,7 +11,9 @@ function load_results()
 
     for spaceres in ["5km", "10km", "25km", "50km"]
 
-        res_all[spaceres] = readtable(Pkg.dir("IcanProj", "data", "table_errors_$(spaceres).txt"))
+        file = joinpath(dirname(pathof(IcanProj)), "..", "data", "table_errors_$(spaceres).txt")
+
+        res_all[spaceres] = CSV.read(file, delim = ",")
 
     end
 
@@ -102,7 +104,7 @@ end
 
 res_all = load_results()
 
-figpath = Pkg.dir("IcanProj", "plots", "rank")
+figpath = joinpath(dirname(pathof(IcanProj)), "..", "plots", "rank")
 
 
 filename = joinpath(figpath, "snowdepth_nse.png")

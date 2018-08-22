@@ -80,14 +80,14 @@ end
 
 
 
-df_all = readtable(Pkg.dir("IcanProj", "data", "forcings_summary.txt"))
+df_all = readtable(joinpath(dirname(pathof(IcanProj)), "..", "data", "forcings_summary.txt"))
 
 df_all[:prec_mean] = min.(365*8(df_all[:rainf_mean] + df_all[:snowf_mean]), 4500)
 
 
 df_all = add_variability(df_all)
 
-figpath = Pkg.dir("IcanProj", "plots", "forcings")
+figpath = joinpath(dirname(pathof(IcanProj)), "..", "plots", "forcings")
 
 
 variable = ["ilwr",

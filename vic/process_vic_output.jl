@@ -11,7 +11,7 @@ function summaries_results(path_sim, path_eval, watersheds, resolutions)
 
     # Load watershed names
 
-    @load Pkg.dir("IcanProj", "data", "wsh_info.jld2") wsh_info
+    # @load Pkg.dir("IcanProj", "data", "wsh_info.jld2") wsh_info
 
     wsh_name = get_wsh_name(wsh_info)
     

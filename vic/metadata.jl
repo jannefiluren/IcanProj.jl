@@ -7,7 +7,7 @@ Load metadata for selected stations.
 """
 function load_metadata(stat_sel)
 
-    file = joinpath(Pkg.dir("IcanProj", "data", "stations_metadata.xlsx"))
+    file = joinpath(dirname(pathof(IcanProj)), "..", "data", "stations_metadata.xlsx")
 
     df_all = readxlsheet(DataFrame ,file, "Ark1")
 
@@ -76,7 +76,7 @@ function get_watershed_data(df_sel)
 
     # Get digital elevation data
 
-    file = joinpath(Pkg.dir("NveData"), "raw/elevation.asc")
+    file = joinpath(dirname(pathof(IcanProj)), "..", "raw/elevation.asc")
     
     dem = read_esri_raster(file)
 
@@ -87,6 +87,8 @@ function get_watershed_data(df_sel)
     ind_senorge, xcoord, ycoord = senorge_info()
 
     # Get information about gridcells with valid input data
+
+    joinpath(dirname(pathof(IcanProj)), "..", "data", "InnenforNorge_20170516.txt")
 
     tmp = readdlm(Pkg.dir("IcanProj", "data", "InnenforNorge_20170516.txt"), ';'; header=true)
 

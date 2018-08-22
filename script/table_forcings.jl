@@ -6,7 +6,7 @@ using ProgressMeter
 
 function forcings_table(path)
 
-    df_all = readtable(Pkg.dir("IcanProj", "data", "df_links.csv"))
+    df_all = CSV.read(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv"))
 
     variables = ["ilwr", "iswr", "pres", "rainf", "rhum", "snowf", "tair", "wind"]
 
@@ -53,7 +53,7 @@ path = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/forcings_st"
 
 df_all = forcings_table(path)
 
-file = Pkg.dir("IcanProj", "data", "forcings_summary.txt")
+file = joinpath(dirname(pathof(IcanProj)), "..", "data", "forcings_summary.txt")
 
 writetable(file, df_all)
 

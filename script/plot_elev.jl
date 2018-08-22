@@ -82,11 +82,11 @@ function plot_map(df, variable, cb_label, cb_unit, title_label, figpath)
 end
 
 
-df_links = CSV.read(Pkg.dir("IcanProj", "data", "df_links.csv"))
+df_links = CSV.read(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv"))
 
 df_links = mean_elevation(df_links)
 
-figpath = Pkg.dir("IcanProj", "plots", "altitudes")
+figpath = joinpath(dirname(pathof(IcanProj)), "..", "plots", "altitudes")
 
 plot_map(df_links, :elev, "Altitude", "(m)", "Resolution 1km", figpath)
 

@@ -10,7 +10,9 @@ function load_results()
 
     for spaceres in ["5km", "10km", "25km", "50km"]
 
-        res_all[spaceres] = readtable(Pkg.dir("IcanProj", "data", "table_errors_$(spaceres).txt"))
+        filename = joinpath(dirname(pathof(IcanProj)), "..", "data", "table_errors_$(spaceres).txt")
+
+        res_all[spaceres] = CSV.read(filename, delim = ",")
 
     end
 
@@ -90,7 +92,7 @@ res_all = load_results()
 
 df_cfg = cfg_table()
 
-figpath = Pkg.dir("IcanProj", "plots", "error_scales")
+figpath = joinpath(dirname(pathof(IcanProj)), "..", "plots", "error_scales")
 
 tmp = [("swe", "SWE"),
        ("snowdepth", "Snowdepth"),

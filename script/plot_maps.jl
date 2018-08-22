@@ -3,6 +3,7 @@ using IcanProj
 using NetCDF
 using DataFrames
 using PyPlot
+using Statistics
 
 
 # Settings
@@ -39,17 +40,17 @@ hs_coarse, hs_aggregated = unify_results(file_fine, file_coarse, df_links, varia
 
 # Compute metrics
 
-rmse = sqrt.(mean((hs_coarse - hs_aggregated).^2 ,1))
+rmse = sqrt.(mean((hs_coarse - hs_aggregated).^2 , dims = 1))
 
-meanref = mean(hs_aggregated, 1)
+meanref = mean(hs_aggregated, dims = 1)
 
-meancmp = mean(hs_coarse, 1)
+meancmp = mean(hs_coarse, dims = 1)
 
 nrmse = rmse ./ meanref
 
 bias = (meancmp - meanref) ./ meanref
 
-nse = 1 - var(hs_coarse-hs_aggregated, 1) ./ var(hs_aggregated .- mean(hs_aggregated, 1), 1)
+nse = 1 - var(hs_coarse-hs_aggregated, 1) ./ var(hs_aggregated .- mean(hs_aggregated, 1), dims = 1)
 
 
 

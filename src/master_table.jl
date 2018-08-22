@@ -100,7 +100,7 @@ df_links[:ind_50km] = convert(Array{Int64}, df_links[:ind_50km])
 
 # Save to file
 
-file = Pkg.dir("IcanProj", "data", "df_links.csv")
+file = joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv")
 
 writetable(file, df_links)
 

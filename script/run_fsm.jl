@@ -189,7 +189,7 @@ tstop  = DateTime(2003, 8, 31, 21, 0, 0)
 
 # Settings specific for each run
 
-file = Pkg.dir("IcanProj", "data", "simulations.xlsx")
+file = joinpath(dirname(pathof(IcanProj)), "..", "data", "simulations.xlsx")
 
 df_settings = readxlsheet(DataFrame, file, "simulations")
 

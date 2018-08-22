@@ -106,7 +106,7 @@ end
 
 # Load table with averaged model results
 
-df_all = readtable(Pkg.dir("IcanProj", "data", "table_results.txt"))
+df_all = CSV.read(joinpath(dirname(pathof(IcanProj)), "..", "data", "table_results.txt"), delim = ",")
 
 
 # Add turbulent heat exchange components
@@ -155,7 +155,7 @@ df_all = add_statistics(df_all, variables, spaceres, func, postfix)
 
 # Plot maps
 
-figpath = Pkg.dir("IcanProj", "plots", "variability_cfgs")
+figpath = joinpath(dirname(pathof(IcanProj)), "..", "plots", "variability_cfgs")
 
 variables = [:swe_1km_cov,           
              :swe_50km_cov,          

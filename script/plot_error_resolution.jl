@@ -5,13 +5,14 @@ using DataFrames
 using PyPlot
 using JFSM2
 using PyCall
+using Statistics
 
 
 
 
 function compute_error(path, res_fine, res_coarse, experiment, variable)
 
-    res = Vector{Dict}(length(experiment))
+    res = Vector{Dict}(undef, length(experiment))
     
     for iexp in experiment
 
@@ -33,15 +34,15 @@ function compute_error(path, res_fine, res_coarse, experiment, variable)
 
         err = hs_coarse - hs_aggregated
 
-        rmse = sqrt.(mean(err.^2 , 1))
+        rmse = sqrt.(mean(err.^2 , dims = 1))
 
-        meanref = mean(hs_aggregated, 1)
+        meanref = mean(hs_aggregated, dims = 1)
 
-        meancmp = mean(hs_coarse, 1)
+        meancmp = mean(hs_coarse, dims = 1)
 
         nrmse = rmse ./ meanref
 
-        bias = 100*(meancmp ./ meanref - 1)
+        bias = 100*(meancmp ./ meanref .- 1)
 
         absbias = abs.(bias)
 
@@ -64,7 +65,7 @@ end
 
 function compute_error_all(path, res_fine, experiment, variable)
 
-    resall = Array{Dict}(32, 0)
+    resall = Array{Dict}(undef, 32, 0)
 
     for res_coarse in ["5km", "10km", "25km", "50km"]
 
@@ -132,7 +133,7 @@ function plot_rank(data, ylabrank, titlerank, filename)
     mat_cfg = mat_cfg[isorted, :] 
 
     xtext = string.(names(df_cfg))
-    ytext = round.(data[isorted], 3)
+    ytext = round.(data[isorted], digits = 3)
     
     ikeep = [1,3,4,5,6]
     
@@ -169,15 +170,12 @@ end
 
 
 
-
-
-
 function plot_error_scales(resall, metric, df_cfg)
 
     data = map(x -> x[metric], resall)
 
-    data = data'
-
+    data = permutedims(data)
+    
     exchng_off = convert(Array{Bool}, df_cfg[:exchng] .== 0)
     exchng_on  = convert(Array{Bool}, df_cfg[:exchng] .== 1)
 
@@ -186,14 +184,14 @@ function plot_error_scales(resall, metric, df_cfg)
     plot(collect(1:size(data,1)), data, color = "gray")
 
     fill_between(collect(1:size(data,1)),
-                 maximum(data[:, exchng_off], 2)[:],
-                 minimum(data[:, exchng_off], 2)[:],
+                 maximum(data[:, exchng_off], dims = 2)[:],
+                 minimum(data[:, exchng_off], dims = 2)[:],
                  facecolor = "red", edgecolor = "red", alpha = 0.5,
                  label = "Exchng=0")
 
     fill_between(collect(1:size(data,1)),
-                 maximum(data[:, exchng_on], 2)[:],
-                 minimum(data[:, exchng_on], 2)[:],
+                 maximum(data[:, exchng_on], dims = 2)[:],
+                 minimum(data[:, exchng_on], dims = 2)[:],
                  facecolor = "blue", edgecolor = "blue", alpha = 0.5,
                  label = "Exchng=1")
 
@@ -211,42 +209,47 @@ end
 
 # Rank plots
 
-pathres = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/fsm2/"
+if false
 
-res_fine = "1km"
+    pathres = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres"
 
-experiment = 1:32
+    res_fine = "1km"
 
-pathfig = Pkg.dir("IcanProj", "plots", "rank")
+    experiment = 1:32
 
-for variable in ["snowdepth", "swe"], res_coarse in ["5km", "10km", "25km", "50km"]
+    pathfig = joinpath(dirname(pathof(IcanProj)), "..", "plots", "rank")
 
-    @show variable, res_coarse
+    for variable in ["snowdepth", "swe"], res_coarse in ["5km", "10km", "25km", "50km"]
 
-    res = compute_error(pathres, res_fine, res_coarse, experiment, variable)
+        @show variable, res_coarse
 
-    for metric in ["nrmse", "absbias"]
+        res = compute_error(pathres, res_fine, res_coarse, experiment, variable)
 
-        data = map(x -> x[metric], res)
+        for metric in ["nrmse", "absbias"]
 
-        filename = joinpath(pathfig, "$(variable)_$(metric)_$(res_coarse).png")
+            data = map(x -> x[metric], res)
 
-        plot_rank(data, "$(metric)", "$(variable) - $(res_coarse)", filename)
+            filename = joinpath(pathfig, "$(variable)_$(metric)_$(res_coarse).png")
 
+            plot_rank(data, "$(metric)", "$(variable) - $(res_coarse)", filename)
+
+        end
+        
     end
-    
-end
 
+end
 
 # Error different scales
 
-pathres = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/fsm2/"
+pathres = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres"
+
+df_cfg = cfg_table()
 
 res_fine = "1km"
 
 experiment = 1:32
 
-pathfig = Pkg.dir("IcanProj", "plots", "error_scales")
+pathfig = joinpath(dirname(pathof(IcanProj)), "..", "plots", "error_scales")
 
 # Snow depth
 
@@ -308,7 +311,7 @@ res_fine = "1km"
 
 experiment = 1:32
 
-pathfig = Pkg.dir("IcanProj", "plots", "rank")
+pathfig = joinpath(dirname(pathof(IcanProj)), "..", "plots", "rank")
 
 variable = "swe"
 

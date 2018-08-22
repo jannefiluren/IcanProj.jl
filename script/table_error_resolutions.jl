@@ -124,7 +124,7 @@ for spaceres in ["5km", "10km", "25km", "50km"]
 
     df = results_table(path, cfgs, variables, spaceres)
 
-    filesave = Pkg.dir("IcanProj", "data", "table_errors_$(spaceres).txt")
+    filesave = joinpath(dirname(pathof(IcanProj)), "..", "data", "table_errors_$(spaceres).txt")
 
     CSV.write(filesave, df)
 
