@@ -3,6 +3,10 @@
 using DataFrames
 using JFSM2
 using PyPlot
+using IcanProj
+using CSV
+using Statistics
+
 
 function load_results()
 
@@ -37,7 +41,7 @@ function error_matrix(res_all, variable, measure)
 
             tmp = df_res[Symbol("$(measure)_$(variable)_cfg$(cfgs[i])")]
 
-            tmp = tmp[!isnan.(tmp)]
+            tmp = tmp[map(x -> !isnan(x), tmp)]
 
             data[i,j] = median(tmp) #df_res[Symbol("$(measure)_$(variable)_cfg$(cfgs[i])")])
 
@@ -52,7 +56,7 @@ end
 
 function plot_error_scales(data, df_cfg, plottitle, ylimits)
 
-    data = data'
+    data = permutedims(data)
 
     exchng_off = convert(Array{Bool}, df_cfg[:exchng] .== 0)
     exchng_on  = convert(Array{Bool}, df_cfg[:exchng] .== 1)
@@ -62,14 +66,14 @@ function plot_error_scales(data, df_cfg, plottitle, ylimits)
     plot(collect(1:size(data,1)), data, color = "gray")
 
     fill_between(collect(1:size(data,1)),
-                 maximum(data[:, exchng_off], 2)[:],
-                 minimum(data[:, exchng_off], 2)[:],
+                 maximum(data[:, exchng_off], dims = 2)[:],
+                 minimum(data[:, exchng_off], dims = 2)[:],
                  facecolor = "red", edgecolor = "red", alpha = 0.5,
                  label = "Exchng = 0")
 
     fill_between(collect(1:size(data,1)),
-                 maximum(data[:, exchng_on], 2)[:],
-                 minimum(data[:, exchng_on], 2)[:],
+                 maximum(data[:, exchng_on], dims = 2)[:],
+                 minimum(data[:, exchng_on], dims = 2)[:],
                  facecolor = "blue", edgecolor = "blue", alpha = 0.5,
                  label = "Exchng = 1")
 
