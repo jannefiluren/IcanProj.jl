@@ -14,7 +14,6 @@ file_fine = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres/results_32/$(var
 
 file_coarse = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres/results_32/$(variable)_50km.nc"
 
-
 #file_fine = "/data02/Ican/vic_sim/fsm_simulations/netcdf/forcings_st/$(variable)_1km.nc"
 
 #file_coarse = "/data02/Ican/vic_sim/fsm_simulations/netcdf/forcings_st/$(variable)_50km.nc"
@@ -27,20 +26,9 @@ df_links = link_results(file_fine, file_coarse)
 hs_coarse, hs_aggregated = unify_results(file_fine, file_coarse, df_links, variable)
 
 
-
-
-
-
-
-
-
-
-
-
-
 # Compute metrics
 
-rmse = sqrt.(mean((hs_coarse - hs_aggregated).^2 , dims = 1))
+rmse = sqrt.(mean((hs_coarse .- hs_aggregated).^2 , dims = 1))
 
 meanref = mean(hs_aggregated, dims = 1)
 
@@ -48,10 +36,9 @@ meancmp = mean(hs_coarse, dims = 1)
 
 nrmse = rmse ./ meanref
 
-bias = (meancmp - meanref) ./ meanref
+bias = (meancmp .- meanref) ./ meanref
 
-nse = 1 - var(hs_coarse-hs_aggregated, 1) ./ var(hs_aggregated .- mean(hs_aggregated, 1), dims = 1)
-
+nse = 1 .- var(hs_coarse .- hs_aggregated, dims = 1) ./ var(hs_aggregated .- mean(hs_aggregated, dims = 1), dims = 1)
 
 
 # Project to map
@@ -66,8 +53,8 @@ nrmse_map = project_results(nrmse[:], df_links)
 
 bias_map = project_results(bias[:], df_links)
 
-
 nse_map = project_results(nse[:], df_links)
+
 
 #=
 # Plot maps
@@ -78,13 +65,11 @@ cb = colorbar()
 cb[:set_label](variable)
 title("Fine scale run")
 
-
 figure()
 imshow(meancmp_map)
 cb = colorbar()
 cb[:set_label](variable)
 title("Coarse scale run")
-
 
 figure()
 imshow(bias_map)
@@ -92,16 +77,12 @@ cb = colorbar()
 cb[:set_label]("Bias (-)")
 title("$(variable) - coarse divded by fine scale")
 
-
 figure()
 imshow(nrmse_map)
 cb = colorbar()
 cb[:set_label]("NRMSE (-)")
 title(variable)
 =#
-
-
-
 
 figure()
 imshow(nse_map)
