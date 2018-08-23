@@ -5,7 +5,7 @@ using DataFrames
 using ProgressMeter
 using PyCall
 using StatsBase
-
+using CSV
 
 import IcanProj.project_results
 
@@ -66,7 +66,7 @@ function add_statistics(df, variables, spaceres, func, postfix)
 
     for v in variables, s in spaceres
 
-        ikeep = ismatch.(Regex("$(v)_cfg.*_$(s)_mean"), String.(colnames))
+        ikeep = occursin.(Ref(Regex("$(v)_cfg.*_$(s)_mean")), String.(colnames))
 
         tmp1 = convert(Array{Float64}, df[colnames[ikeep]])
 
