@@ -3,6 +3,9 @@ using DataFrames
 using JFSM2
 using PyPlot
 using PyCall
+using Statistics
+using IcanProj
+using CSV
 
 
 function load_results()
@@ -39,7 +42,7 @@ function error_matrix(res_all, variable, measure)
 
             tmp = df_res[Symbol("$(measure)_$(variable)_cfg$(cfgs[i])")]
 
-            tmp = tmp[!isnan.(tmp)]
+            tmp = tmp[map(x -> !isnan(x), tmp)]   
 
             data[i,j] = median(tmp) #df_res[Symbol("$(measure)_$(variable)_cfg$(cfgs[i])")])
 
@@ -111,11 +114,11 @@ filename = joinpath(figpath, "snowdepth_nse.png")
 
 nseres, spaceres = error_matrix(res_all, "snowdepth", "nse")
 
-plot_rank(1-nseres[:,end], "Ranking from lowest to highest error", "Snowdepth", filename)
+plot_rank(1 .- nseres[:,end], "Ranking from lowest to highest error", "Snowdepth", filename)
 
 
 filename = joinpath(figpath, "swe_nse.png")
 
 nseres, spaceres = error_matrix(res_all, "swe", "nse")
 
-plot_rank(1-nseres[:,end], "Ranking from lowest to highest error", "SWE", filename)
+plot_rank(1 .- nseres[:,end], "Ranking from lowest to highest error", "SWE", filename)
