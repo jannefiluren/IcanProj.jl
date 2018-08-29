@@ -67,7 +67,7 @@ end
 
 respath = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres"
 
-figpath = joinpath(pathof(IcanProj), "..", "..", "plots", "config_ts")
+figpath = joinpath(dirname(pathof(IcanProj)), "..", "plots", "config_ts")
 
 variable = "swe"
 

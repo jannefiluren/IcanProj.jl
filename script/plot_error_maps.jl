@@ -61,6 +61,8 @@ function plot_map(df, variable, cb_label, cb_unit, title_label, figpath)
 
     """
 
+    @info "finished plotting"
+
 end
 
 

@@ -104,6 +104,8 @@ tmp = [("swe", "SWE"),
 
 for (v, t) in tmp
 
+    global nseres, spaceres
+
     nseres, spaceres = error_matrix(res_all, v, "nse")
 
     plot_error_scales(nseres, df_cfg, t, (0.95, 1.0))
@@ -118,6 +120,8 @@ tmp = [("hatmo", "Sensible heat flux"),
        ("melt", "Surface melt")]
 
 for (v, t) in tmp
+
+    global nseres, spaceres
 
     nseres, spaceres = error_matrix(res_all, v, "nse")
 

@@ -6,6 +6,7 @@ using ProgressMeter
 using PyCall
 using StatsBase
 using CSV
+using Statistics
 
 import IcanProj.project_results
 
