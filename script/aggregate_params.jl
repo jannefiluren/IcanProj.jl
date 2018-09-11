@@ -6,6 +6,28 @@ using CSV
 using ProgressMeter
 
 
+function write_netcdfs(path, savefolder, res, frac_landuse, lai_landuse, hcan_landuse)
+
+    filename = joinpath(path, savefolder, "params_$(res).nc")
+
+    isfile(filename) && rm(filename, force = true)
+
+    dim_space = collect(1:size(frac_landuse, 1))
+    dim_classes = collect(1:size(frac_landuse, 2))
+
+    nccreate(filename, "frac_landuse", "dim_space", dim_space, "dim_classes", dim_classes)
+    nccreate(filename, "lai_landuse", "dim_space", dim_space, "dim_classes", dim_classes)
+    nccreate(filename, "hcan_landuse", "dim_space", dim_space, "dim_classes", dim_classes)
+
+    ncwrite(frac_landuse, filename, "frac_landuse")
+    ncwrite(lai_landuse, filename, "lai_landuse")
+    ncwrite(hcan_landuse, filename, "hcan_landuse")
+
+    ncclose(filename)
+
+end
+
+
 function aggregate_params(path, res, name)
 
     @info res
@@ -27,7 +49,7 @@ function aggregate_params(path, res, name)
     lai = [1.4, 4.3, 6.7, 9.1, 0.9, 2.4, 2.3, 4.4, 0.1, 0.2, 0.3, 0.4, 0]
     hcan = [7.5, 12.3, 16.8, 22, 7.5, 11.6, 17, 17.2, 4.9, 8.4, 12.2, 18.3, 0]
 
-    # Output arrays
+    # Output arrays for forest runs
 
     landuse_classes = 3
 
@@ -45,7 +67,7 @@ function aggregate_params(path, res, name)
         
         isorted = sortperm(tmp, rev=true)
 
-        ifinal = isorted[1:3]
+        ifinal = isorted[1:landuse_classes]
         
         frac_landuse[i, :] = tmp[ifinal] ./ sum(tmp[ifinal])
 
@@ -55,24 +77,19 @@ function aggregate_params(path, res, name)
 
     end
 
-    # Save to netcdfs
+    # Save to netcdfs for forest runs
 
-    filename = joinpath(path, "params", "params_$(res).nc")
+    write_netcdfs(path, "params_forest", res, frac_landuse, lai_landuse, hcan_landuse)
 
-    isfile(filename) && rm(filename, force = true)
+    # Deal with simulations omitting forest processes
 
-    dim_space = collect(1:size(frac_landuse, 1))
-    dim_classes = collect(1:size(frac_landuse, 2))
+    frac_landuse = ones(length(ind_nc), 1)
+    lai_landuse = zeros(length(ind_nc), 1)
+    hcan_landuse = zeros(length(ind_nc), 1)
 
-    nccreate(filename, "frac_landuse", "dim_space", dim_space, "dim_classes", dim_classes)
-    nccreate(filename, "lai_landuse", "dim_space", dim_space, "dim_classes", dim_classes)
-    nccreate(filename, "hcan_landuse", "dim_space", dim_space, "dim_classes", dim_classes)
+    # Save to netcdfs for forest runs
 
-    ncwrite(frac_landuse, filename, "frac_landuse")
-    ncwrite(lai_landuse, filename, "lai_landuse")
-    ncwrite(hcan_landuse, filename, "hcan_landuse")
-
-    ncclose(filename)
+    write_netcdfs(path, "params_open", res, frac_landuse, lai_landuse, hcan_landuse)
     
 end
 
