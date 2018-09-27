@@ -4,7 +4,7 @@ using ProgressMeter
 
 # Settings
 
-path = "/data02/Ican/vic_sim/fsm_simulations"
+path = "/data04/jmg/fsm_simulations"
 
 time_start = DateTime(2008,1,1)
 

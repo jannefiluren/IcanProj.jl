@@ -10,13 +10,13 @@ using Statistics
 
 variable = "hatmo"
 
-file_fine = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres/results_32/$(variable)_1km.nc"
+file_fine = "/data04/jmg/fsm_simulations/netcdf/fsmres/results_32/$(variable)_1km.nc"
 
-file_coarse = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres/results_32/$(variable)_50km.nc"
+file_coarse = "/data04/jmg/fsm_simulations/netcdf/fsmres/results_32/$(variable)_50km.nc"
 
-#file_fine = "/data02/Ican/vic_sim/fsm_simulations/netcdf/forcings_st/$(variable)_1km.nc"
+#file_fine = "/data04/jmg/fsm_simulations/netcdf/forcings_st/$(variable)_1km.nc"
 
-#file_coarse = "/data02/Ican/vic_sim/fsm_simulations/netcdf/forcings_st/$(variable)_50km.nc"
+#file_coarse = "/data04/jmg/fsm_simulations/netcdf/forcings_st/$(variable)_50km.nc"
 
 
 # Load data

@@ -112,7 +112,7 @@ end
 
 
 
-path = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres"
+path = "/data04/jmg/fsm_simulations/netcdf/fsmres"
 
 cfgs = 1:32
 
@@ -126,7 +126,7 @@ for spaceres in ["5km", "10km", "25km", "50km"]
 
     filesave = joinpath(dirname(pathof(IcanProj)), "..", "data", "table_errors_$(spaceres).txt")
 
-    CSV.write(filesave, df)
+    df |> CSV.write(filesave)
 
 end
 

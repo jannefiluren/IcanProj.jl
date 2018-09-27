@@ -4,7 +4,7 @@ using NetCDF
 
 # Add array with time in netcdfs with forcing data
 
-path_st = "/data02/Ican/vic_sim/fsm_simulations/netcdf/forcings_st"
+path_st = "/data04/jmg/fsm_simulations/netcdf/forcings_st"
 
 files = readdir(path_st)
 

@@ -34,7 +34,7 @@ function aggregate_params(path, res, name)
 
     # Metadata from table
 
-    df_landuse = CSV.read(joinpath(dirname(pathof(IcanProj)), "..", "data", "landuse.csv"), rows_for_type_detect = typemax(Int))
+    df_landuse = CSV.File(joinpath(dirname(pathof(IcanProj)), "..", "data", "landuse.csv"), rows_for_type_detect = typemax(Int)) |> DataFrame
 
     # Metadata from input netcdfs
 
@@ -96,7 +96,7 @@ end
 
 # Settings
 
-path = "/data02/Ican/vic_sim/fsm_simulations/netcdf"
+path = "/data04/jmg/fsm_simulations/netcdf"
 
 res_name= Dict("1km" => "ind_senorge",
                "5km" => "ind_5km",

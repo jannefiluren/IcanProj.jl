@@ -6,7 +6,7 @@ using ProgressMeter
 
 function forcings_table(path)
 
-    df_all = CSV.read(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv"))
+    df_all = CSV.File(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv")) |> DataFrame
 
     variables = ["ilwr", "iswr", "pres", "rainf", "rhum", "snowf", "tair", "wind"]
 

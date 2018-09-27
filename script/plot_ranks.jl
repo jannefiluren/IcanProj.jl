@@ -16,7 +16,7 @@ function load_results()
 
         file = joinpath(dirname(pathof(IcanProj)), "..", "data", "table_errors_$(spaceres).txt")
 
-        res_all[spaceres] = CSV.read(file, delim = ",")
+        res_all[spaceres] = CSV.File(file, delim = ",") |> DataFrame
 
     end
 

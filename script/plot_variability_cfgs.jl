@@ -107,7 +107,7 @@ end
 
 # Load table with averaged model results
 
-df_all = CSV.read(joinpath(dirname(pathof(IcanProj)), "..", "data", "table_results.txt"), delim = ",")
+df_all = CSV.File(joinpath(dirname(pathof(IcanProj)), "..", "data", "table_results.txt"), delim = ",") |> DataFrame
 
 
 # Add turbulent heat exchange components

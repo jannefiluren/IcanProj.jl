@@ -13,7 +13,7 @@ function aggregate_forcings(path, var, res)
     
     # Metadata from table
 
-    df_meta = CSV.read(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv"))
+    df_meta = CSV.File(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv")) |> DataFrame
     
     # Metadata from input netcdfs
 
@@ -79,7 +79,7 @@ end
 
 # Settings
 
-path = "/data02/Ican/vic_sim/fsm_simulations/netcdf"
+path = "/data04/jmg/fsm_simulations/netcdf"
 
 var_all = ["ilwr", "iswr", "pres", "rainf", "snowf", "wind", "rhum", "tair"]
 

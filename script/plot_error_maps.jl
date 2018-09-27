@@ -50,8 +50,8 @@ function plot_map(df, variable, cb_label, cb_unit, title_label, figpath)
 
     ax.grid(linestyle='dotted')
 
-    plt.tick_params(axis='both', left='off', top='off', right='off', bottom='off',
-                    labelleft='off', labeltop='off', labelright='off', labelbottom='off')
+    plt.tick_params(axis='both', left=False, top=False, right=False, bottom=False,
+                    labelleft=False, labeltop=False, labelright=False, labelbottom=False)
 
     plt.tight_layout()
 
@@ -70,9 +70,9 @@ end
 
 path = dirname(pathof(IcanProj))
 
-df_res = CSV.read(joinpath(path, "..", "data", "table_errors_50km.txt"))
+df_res = CSV.File(joinpath(path, "..", "data", "table_errors_50km.txt")) |> DataFrame
 
-df_links = CSV.read(joinpath(path, "..", "data", "df_links.csv"))
+df_links = CSV.read(joinpath(path, "..", "data", "df_links.csv")) |> DataFrame
 
 df_all = join(df_links, df_res, on = :ind_50km)
 

@@ -7,7 +7,7 @@ using CSV
 
 function results_table(path)
 
-    df_all = CSV.read(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv"))
+    df_all = CSV.File(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv")) |> DataFrame
     
     for variable in ["gsurf", "hatmo", "latmo", "melt", "rnet", "rof", "snowdepth", "swe"], #, "tsoil", "tsurf"],
         spaceres in ["1km", "50km"],
@@ -42,11 +42,11 @@ function results_table(path)
 end
 
 
-path = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres"
+path = "/data04/jmg/fsm_simulations/netcdf/fsmres"
 
 df_all = results_table(path)
 
 file = joinpath(dirname(pathof(IcanProj)), "..", "data", "table_results.txt")
 
-CSV.write(file, df_all)
+df_all |> CSV.write(file)
 

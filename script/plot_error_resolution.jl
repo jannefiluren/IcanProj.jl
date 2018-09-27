@@ -211,7 +211,7 @@ end
 
 if false
 
-    pathres = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres"
+    pathres = "/data04/jmg/fsm_simulations/netcdf/fsmres"
 
     res_fine = "1km"
 
@@ -241,7 +241,7 @@ end
 
 # Error different scales
 
-pathres = "/data02/Ican/vic_sim/fsm_simulations/netcdf/fsmres"
+pathres = "/data04/jmg/fsm_simulations/netcdf/fsmres"
 
 df_cfg = cfg_table()
 

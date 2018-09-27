@@ -3,7 +3,7 @@ using PyPlot
 using Dates
 
 
-path = "/data02/Ican/vic_sim/fsm_simulations/netcdf/forcings_st"
+path = "/data04/jmg/fsm_simulations/netcdf/forcings_st"
 
 
 for variable in ["ilwr", "iswr", "pres", "rainf", "snowf", "rhum", "tair", "wind"]
