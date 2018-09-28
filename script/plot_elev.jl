@@ -19,7 +19,7 @@ function mean_elevation(df)
 
         df_tmp = aggregate(df_tmp, indname, mean)
 
-        rename!(df_tmp, Symbol("elev_Statistics.mean") => meanname)
+        rename!(df_tmp, Symbol("elev_mean") => meanname)
 
         df = join(df, df_tmp, on = indname)
         

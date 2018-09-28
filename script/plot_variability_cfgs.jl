@@ -49,8 +49,8 @@ function plot_map(df, variable, cb_label, cb_unit, title_label, figpath)
 
     ax.grid(linestyle='dotted')
 
-    plt.tick_params(axis='both', left='off', top='off', right='off', bottom='off',
-                    labelleft='off', labeltop='off', labelright='off', labelbottom='off')
+    plt.tick_params(axis='both', left=False, top=False, right=False, bottom=False,
+                    labelleft=False, labeltop=False, labelright=False, labelbottom=False)
 
     fig.savefig($(file), dpi = 200, bbox_inches='tight')
 

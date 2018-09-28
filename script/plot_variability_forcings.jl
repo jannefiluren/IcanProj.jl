@@ -80,7 +80,7 @@ end
 
 
 
-df_all = readtable(joinpath(dirname(pathof(IcanProj)), "..", "data", "forcings_summary.txt"))
+df_all = CSV.File(joinpath(dirname(pathof(IcanProj)), "..", "data", "forcings_summary.txt")) |> DataFrame
 
 df_all[:prec_mean] = min.(365*8(df_all[:rainf_mean] + df_all[:snowf_mean]), 4500)
 

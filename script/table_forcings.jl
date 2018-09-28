@@ -2,6 +2,7 @@ using IcanProj
 using NetCDF
 using DataFrames
 using ProgressMeter
+using Statistics
 
 
 function forcings_table(path)

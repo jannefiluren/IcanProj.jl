@@ -348,7 +348,7 @@ Read soil parameter file.
 """
 function read_soil_params(path)
     
-    df = readtable(joinpath(path, "params/soil_param"), separator = ' ', header = false)
+    df = CSV.File(joinpath(path, "params/soil_param"), separator = ' ', header = false) |> DataFrame
     
     colnames = [:run_cell, :gridcel, :lat, :lon, :infilt, :D1, :D2, :D3, :D4,
     :expt1, :expt2, :expt3, :Ksat1, :Ksat2, :Ksat3, :phi_s1, :phi_s2, :phi_s3,
@@ -459,7 +459,7 @@ Read flux files (ascii outputs).
 """
 function read_fluxes(path_sim, file)
     
-    df = readtable(joinpath(path_sim, file), separator = '\t', header = false)
+    df = CSV.File(joinpath(path_sim, file), separator = '\t', header = false) |> DataFrame
     
     # Water balance mode on daily time step
     
@@ -541,7 +541,7 @@ Read snow files (ascii outputs).
 """
 function read_snow(path_sim, file)
 
-    df = readtable(joinpath(path_sim, file), separator = '\t', header = false)
+    df = CSV.File(joinpath(path_sim, file), separator = '\t', header = false) |> DataFrame
 
     # Water balance mode on daily time step
     

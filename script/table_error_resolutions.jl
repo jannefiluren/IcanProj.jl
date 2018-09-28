@@ -3,6 +3,7 @@ using IcanProj
 using NetCDF
 using DataFrames
 using CSV
+using Statistics
 
 
 function compute_statistics(var_coarse, var_ref, mask)
@@ -23,7 +24,7 @@ function compute_statistics(var_coarse, var_ref, mask)
             
             ref = var_ref[ikeep, i]
 
-            nse[i] = 1 - var(sim - ref) / var(ref - mean(ref))
+            nse[i] = 1 - var(sim .- ref) / var(ref .- mean(ref))
 
             r[i] = cor(sim, ref)
 

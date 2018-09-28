@@ -90,7 +90,7 @@ function link_results(file_fine::String, file_coarse::String) #, id_fine, id_coa
     
     sort!(df_links, [:id_fine])
 
-    return(df_links)
+    return df_links
     
 end
 

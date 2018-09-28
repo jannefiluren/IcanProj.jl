@@ -19,7 +19,7 @@ function get_summary_tables(path, opt)
             
             file = joinpath(path, watershed, "res_$(resolution).csv")
 
-            df = readtable(file)
+            df = CSV.File(file) |> DataFrame
 
             df[:time] = DateTime.(df[:time], DateFormat("yyyy-mm-ddTHH:MM:SS"))
 

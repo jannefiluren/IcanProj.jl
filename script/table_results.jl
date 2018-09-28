@@ -3,6 +3,7 @@ using NetCDF
 using DataFrames
 using ProgressMeter
 using CSV
+using Statistics
 
 
 function results_table(path)
