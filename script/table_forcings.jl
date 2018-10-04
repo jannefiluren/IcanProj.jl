@@ -3,6 +3,7 @@ using NetCDF
 using DataFrames
 using ProgressMeter
 using Statistics
+using CSV
 
 
 function forcings_table(path)
@@ -50,11 +51,11 @@ function forcings_table(path)
 end
 
 
-path = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/forcings_st"
+path = "/data04/jmg/fsm_simulations/netcdf/forcings_st"
 
 df_all = forcings_table(path)
 
 file = joinpath(dirname(pathof(IcanProj)), "..", "data", "forcings_summary.txt")
 
-writetable(file, df_all)
+df_all |> CSV.write(file)
 

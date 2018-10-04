@@ -211,7 +211,9 @@ end
 
 if false
 
-    pathres = "/data04/jmg/fsm_simulations/netcdf/fsmres"
+    @info "PLOT OPEN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
+    pathres = "/data04/jmg/fsm_simulations/netcdf/fsmres_open"
 
     res_fine = "1km"
 
@@ -241,7 +243,9 @@ end
 
 # Error different scales
 
-pathres = "/data04/jmg/fsm_simulations/netcdf/fsmres"
+@info "PLOT OPEN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
+pathres = "/data04/jmg/fsm_simulations/netcdf/fsmres_open"
 
 df_cfg = cfg_table()
 

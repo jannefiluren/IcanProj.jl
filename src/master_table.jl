@@ -3,7 +3,7 @@ using NetCDF
 using NveData
 using PyPlot
 using DataFrames
-
+using CSV
 
 
 function resolution_ind(res, nrow, ncol)
@@ -13,7 +13,7 @@ function resolution_ind(res, nrow, ncol)
     ncol = ncol-ncol%res-res+1
     counter = 1
     for irow = 1:res:nrow, icol = 1:res:ncol
-        ind[irow:irow+res-1, icol:icol+res-1] = counter
+        ind[irow:irow+res-1, icol:icol+res-1] .= counter
         counter += 1
     end
     return ind
@@ -24,7 +24,7 @@ end
 
 # Settings
 
-path = "/data02/Ican/vic_sim/fsm_past_1km"
+path = "/data04/jmg/fsm_simulations"
 
 # Load soil parameters
 
@@ -56,13 +56,13 @@ ind_25km = convert(Array{Any}, ind_25km)
 
 ind_50km = convert(Array{Any}, ind_50km)
 
-ind_5km[ind_5km .< 0] = NA
+ind_5km[ind_5km .< 0] .= missing
 
-ind_10km[ind_10km .< 0] = NA
+ind_10km[ind_10km .< 0] .= missing
 
-ind_25km[ind_25km .< 0] = NA
+ind_25km[ind_25km .< 0] .= missing
 
-ind_50km[ind_50km .< 0] = NA
+ind_50km[ind_50km .< 0] .= missing
 
 # Data frame from soil parameters
 
@@ -72,6 +72,8 @@ df_left = DataFrame(ind_senorge = soil_param[:gridcel],
                     elev =soil_param[:elev])
 
 df_right = DataFrame(ind_senorge = ind_senorge[:],
+                     xcoord = xcoord[:],
+                     ycoord = ycoord[:],
                      ind_julia = ind_julia[:],
                      ind_5km = ind_5km[:],
                      ind_10km = ind_10km[:],
@@ -84,7 +86,7 @@ df_links = join(df_left, df_right, on=:ind_senorge)
 
 # Remove missing values
 
-completecases!(df_links)
+dropmissing!(df_links)
 
 # Convert columns back to integers
 
@@ -102,7 +104,9 @@ df_links[:ind_50km] = convert(Array{Int64}, df_links[:ind_50km])
 
 file = joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv")
 
-writetable(file, df_links)
+#writetable(file, df_links)
+
+df_links |> CSV.write(file)
 
 
 

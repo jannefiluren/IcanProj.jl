@@ -8,11 +8,11 @@ using Statistics
 
 # Settings
 
-variable = "hatmo"
+variable = "latmo"
 
-file_fine = "/data04/jmg/fsm_simulations/netcdf/fsmres/results_32/$(variable)_1km.nc"
+file_fine = "/data04/jmg/fsm_simulations/netcdf/fsmres_open/results_32/$(variable)_1km.nc"
 
-file_coarse = "/data04/jmg/fsm_simulations/netcdf/fsmres/results_32/$(variable)_50km.nc"
+file_coarse = "/data04/jmg/fsm_simulations/netcdf/fsmres_open/results_32/$(variable)_50km.nc"
 
 #file_fine = "/data04/jmg/fsm_simulations/netcdf/forcings_st/$(variable)_1km.nc"
 
@@ -36,7 +36,7 @@ meancmp = mean(hs_coarse, dims = 1)
 
 nrmse = rmse ./ meanref
 
-bias = (meancmp .- meanref) ./ meanref
+bias = (meancmp .- meanref)# ./ meanref
 
 nse = 1 .- var(hs_coarse .- hs_aggregated, dims = 1) ./ var(hs_aggregated .- mean(hs_aggregated, dims = 1), dims = 1)
 
@@ -85,9 +85,9 @@ title(variable)
 =#
 
 figure()
-imshow(nse_map)
+imshow(bias_map)
 cb = colorbar()
-cb[:set_label]("NSE (-)")
+cb[:set_label]("BIAS (-)")
 title(variable)
 
 #=

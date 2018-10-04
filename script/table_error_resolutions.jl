@@ -16,7 +16,7 @@ function compute_statistics(var_coarse, var_ref, mask)
     
     for i in 1:n
 
-        ikeep = find(mask[:, i])
+        ikeep = findall(mask[:, i])
 
         if length(ikeep) > 10
 
@@ -113,7 +113,7 @@ end
 
 
 
-path = "/data04/jmg/fsm_simulations/netcdf/fsmres"
+path = "/data04/jmg/fsm_simulations/netcdf/fsmres_forest"
 
 cfgs = 1:32
 

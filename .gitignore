@@ -5,3 +5,4 @@
 *.jl.mem
 /data
 /drafts
+.Rhistory

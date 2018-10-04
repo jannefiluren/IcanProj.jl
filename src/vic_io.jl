@@ -348,7 +348,7 @@ Read soil parameter file.
 """
 function read_soil_params(path)
     
-    df = CSV.File(joinpath(path, "params/soil_param"), separator = ' ', header = false) |> DataFrame
+    df = CSV.File(joinpath(path, "params/soil_param"), delim = ' ', header = false) |> DataFrame
     
     colnames = [:run_cell, :gridcel, :lat, :lon, :infilt, :D1, :D2, :D3, :D4,
     :expt1, :expt2, :expt3, :Ksat1, :Ksat2, :Ksat3, :phi_s1, :phi_s2, :phi_s3,
@@ -359,6 +359,8 @@ function read_soil_params(path)
     :Wpwp_FRACT2, :Wpwp_FRACT3, :rough, :snow_rough, :annual_prec, :resid_moist1, 
     :resid_moist2, :resid_moist3, :fs_active]
     
+    df = df[1:length(colnames)]
+
     names!(df, colnames)
     
     return df

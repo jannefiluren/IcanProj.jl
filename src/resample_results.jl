@@ -47,13 +47,13 @@ function link_results(file_fine::String, file_coarse::String) #, id_fine, id_coa
 
     id_fine = ncgetatt(file_fine, "id", "id")
 
-    if typeof(id_fine) == Void
+    if typeof(id_fine) == Nothing
         id_fine = ncgetatt(file_fine, "dim_space", "id")
     end
 
     id_coarse = ncgetatt(file_coarse, "id", "id")
 
-    if typeof(id_coarse) == Void
+    if typeof(id_coarse) == Nothing
         id_coarse = ncgetatt(file_coarse, "dim_space", "id")
     end
 

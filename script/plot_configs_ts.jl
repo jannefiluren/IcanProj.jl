@@ -64,8 +64,9 @@ function plot_hydrol_exchng(time, data, df_cfg, fig_title)
 end
 
 
+println("USING OPEN DATA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-respath = "/data04/jmg/fsm_simulations/netcdf/fsmres"
+respath = "/data04/jmg/fsm_simulations/netcdf/fsmres_open"
 
 figpath = joinpath(dirname(pathof(IcanProj)), "..", "plots", "config_ts")
 
