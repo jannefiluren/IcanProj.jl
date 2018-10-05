@@ -63,13 +63,51 @@ function aggregate_params(path, res, name)
 
         irows = findall(df_landuse[Symbol(name)] .== ind_cell)
 
+        # No data available - define as open areas
+
+        if isempty(irows)
+
+            frac_landuse[i, 1] .= 1
+
+            frac_landuse[i, 2:end] .= 0
+
+            lai_landuse[i, :] .= 0
+
+            hcan_landuse[i, :] .= 0
+
+            continue
+
+        end
+
+        # Compute total fraction
+
         tmp = colwise(mean, df_landuse[irows, 9:end])
         
         isorted = sortperm(tmp, rev=true)
 
         ifinal = isorted[1:landuse_classes]
+
+        frac_total = sum(tmp[ifinal])
+
+        # Total fraction is too small - define as open areas
+
+        if frac_total < 0.1
+
+            frac_landuse[i, 1] .= 1
+
+            frac_landuse[i, 2:end] .= 0
+
+            lai_landuse[i, :] .= 0
+
+            hcan_landuse[i, :] .= 0
+
+            continue
+
+        end
         
-        frac_landuse[i, :] = tmp[ifinal] ./ sum(tmp[ifinal])
+        # Data is valid - use landuse classes
+        
+        frac_landuse[i, :] = tmp[ifinal] ./ frac_total
 
         lai_landuse[i, :] = lai[ifinal]
 
@@ -77,6 +115,7 @@ function aggregate_params(path, res, name)
 
     end
 
+    
     # Save to netcdfs for forest runs
 
     write_netcdfs(path, "params_forest", res, frac_landuse, lai_landuse, hcan_landuse)
