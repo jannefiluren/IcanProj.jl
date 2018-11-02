@@ -8,8 +8,6 @@ using PyCall
 using Statistics
 
 
-
-
 function compute_error(path, res_fine, res_coarse, experiment, variable)
 
     res = Vector{Dict}(undef, length(experiment))
@@ -28,23 +26,23 @@ function compute_error(path, res_fine, res_coarse, experiment, variable)
 
         df_links = link_results(file_fine, file_coarse)
 
-        hs_coarse, hs_aggregated, ngrids = unify_results(file_fine, file_coarse, df_links, variable)
+        data_coarse, data_aggregated, ngrids = unify_results(file_fine, file_coarse, df_links, variable)
 
         # Compute metrics per grid cell
 
-        err = hs_coarse - hs_aggregated
+        err = data_coarse - data_aggregated
 
         rmse = sqrt.(mean(err.^2 , dims = 1))
 
-        meanref = mean(hs_aggregated, dims = 1)
+        meanref = mean(data_aggregated, dims = 1)
 
-        meancmp = mean(hs_coarse, dims = 1)
+        meancmp = mean(data_coarse, dims = 1)
 
         nrmse = rmse ./ meanref
 
-        bias = 100*(meancmp ./ meanref .- 1)
+        bias = meancmp .- meanref
 
-        absbias = abs.(bias)
+        perc_bias = 100*(meancmp ./ meanref .- 1)
 
         # Return as averages
 
@@ -54,7 +52,8 @@ function compute_error(path, res_fine, res_coarse, experiment, variable)
                          "meanref" => sum(meanref[:] .* weights),
                          "meancmp" => sum(meancmp[:] .* weights),
                          "nrmse" => sum(nrmse[:] .* weights),
-                         "absbias" => sum(absbias[:] .* weights))
+                         "bias" => sum(bias[:] .* weights),
+                         "perc_bias" => sum(perc_bias[:] .* weights))
 
     end
 
@@ -80,30 +79,6 @@ function compute_error_all(path, res_fine, experiment, variable)
     return resall
 
 end
-
-
-#=
-function compute_error_all_resolutions(path, res_fine, res_coarse, experiment, variable)
-
-    res = Array{Dict, 2}(length(experiment), length(res_coarse))
-
-    for i in eachindex(experiment), j in eachindex(res_coarse)
-
-        @show i, j
-        
-        res[i, j] = compute_error_one_resolution(path,
-                                                 res_fine,
-                                                 res_coarse[j],
-                                                 experiment[i],
-                                                 variable)
-        
-    end
-
-    return res
-
-end
-=#
-
 
 
 function plot_cfg_text(data, var_name)
@@ -203,6 +178,159 @@ end
 
 
 
+# Error different scales - overall settings
+
+pathres = "/data04/jmg/fsm_simulations/netcdf/fsmres_forest"
+
+df_cfg = cfg_table()
+
+res_fine = "1km"
+
+experiment = 1:32
+
+pathfig = joinpath(dirname(pathof(IcanProj)), "..", "plots", "error_scales")
+
+
+# Snow depth
+
+variable = "snowdepth"
+
+title_str = "Snow depth"
+metric_vec = ["perc_bias", "rmse", "nrmse"]
+ylabel_vec = ["Bias (%)", "RMSE (m)", "NRMSE (-)"]
+
+resall = compute_error_all(pathres, res_fine, experiment, variable)
+
+for (metric, ylab) in zip(metric_vec, ylabel_vec)
+
+    plot_error_scales(resall, metric, df_cfg)
+    title(title_str)
+    ylabel(ylab)
+
+    savefig(joinpath(pathfig, "$(variable)_$(metric).png"))
+
+    close()
+
+end
+
+
+# Snow water equivalent
+
+variable = "swe"
+
+title_str = "Snow water equivalent"
+metric_vec = ["perc_bias", "rmse", "nrmse"]
+ylabel_vec = ["Bias (%)", "RMSE (mm)", "NRMSE (-)"]
+
+resall = compute_error_all(pathres, res_fine, experiment, variable)
+
+for (metric, ylab) in zip(metric_vec, ylabel_vec)
+
+    plot_error_scales(resall, metric, df_cfg)
+    title(title_str)
+    ylabel(ylab)
+
+    savefig(joinpath(pathfig, "$(variable)_$(metric).png"))
+
+    close()
+
+end
+
+
+# Latent heat fluxes
+
+variable = "latmo"
+
+title_str = "Latent heat fluxes"
+metric_vec = ["bias", "rmse"]
+ylabel_vec = ["Bias (W/m2)", "RMSE (W/m2)"]
+
+resall = compute_error_all(pathres, res_fine, experiment, variable)
+
+for (metric, ylab) in zip(metric_vec, ylabel_vec)
+
+    plot_error_scales(resall, metric, df_cfg)
+    title(title_str)
+    ylabel(ylab)
+
+    savefig(joinpath(pathfig, "$(variable)_$(metric).png"))
+
+    close()
+
+end
+
+
+# Sensible heat fluxes
+
+variable = "hatmo"
+
+title_str = "Sensible heat fluxes"
+metric_vec = ["bias", "rmse"]
+ylabel_vec = ["Bias (W/m2)", "RMSE (W/m2)"]
+
+resall = compute_error_all(pathres, res_fine, experiment, variable)
+
+for (metric, ylab) in zip(metric_vec, ylabel_vec)
+
+    plot_error_scales(resall, metric, df_cfg)
+    title(title_str)
+    ylabel(ylab)
+
+    savefig(joinpath(pathfig, "$(variable)_$(metric).png"))
+
+    close()
+
+end
+
+
+# Net radiation
+
+variable = "rnet"
+
+title_str = "Net radiation"
+metric_vec = ["bias", "rmse", "nrmse"]
+ylabel_vec = ["Bias (W/m2)", "RMSE (W/m2)", "NRMSE (-)"]
+
+resall = compute_error_all(pathres, res_fine, experiment, variable)
+
+for (metric, ylab) in zip(metric_vec, ylabel_vec)
+
+    plot_error_scales(resall, metric, df_cfg)
+    title(title_str)
+    ylabel(ylab)
+
+    savefig(joinpath(pathfig, "$(variable)_$(metric).png"))
+
+    close()
+
+end
+
+
+# Melt
+
+variable = "melt"
+
+title_str = "Melt"
+metric_vec = ["bias", "rmse", "nrmse"]
+ylabel_vec = ["Bias (mm/day)", "RMSE (mm/day)", "NRMSE (-)"]
+
+resall = compute_error_all(pathres, res_fine, experiment, variable)
+
+for (metric, ylab) in zip(metric_vec, ylabel_vec)
+
+    plot_error_scales(resall, metric, df_cfg)
+    title(title_str)
+    ylabel(ylab)
+
+    savefig(joinpath(pathfig, "$(variable)_$(metric).png"))
+
+    close()
+
+end
+
+
+
+
 
 
 
@@ -211,9 +339,7 @@ end
 
 if false
 
-    @info "PLOT OPEN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
-    pathres = "/data04/jmg/fsm_simulations/netcdf/fsmres_open"
+    pathres = "/data04/jmg/fsm_simulations/netcdf/fsmres_forest"
 
     res_fine = "1km"
 
@@ -241,297 +367,46 @@ if false
 
 end
 
-# Error different scales
 
-@info "PLOT OPEN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
-pathres = "/data04/jmg/fsm_simulations/netcdf/fsmres_open"
 
-df_cfg = cfg_table()
 
-res_fine = "1km"
 
-experiment = 1:32
 
-pathfig = joinpath(dirname(pathof(IcanProj)), "..", "plots", "error_scales")
 
-# Snow depth
 
-variable = "snowdepth"
 
-resall = compute_error_all(pathres, res_fine, experiment, variable)
 
-metric = "absbias"
 
-plot_error_scales(resall, metric, df_cfg)
-title("Snow depth")
-ylabel("Absolute bias (%)")
 
-savefig(joinpath(pathfig, "$(variable)_$(metric).png"))
 
-metric = "nrmse"
 
-plot_error_scales(resall, metric, df_cfg)
-title("Snow depth")
-ylabel("NRMSE (-)")
 
-savefig(joinpath(pathfig, "$(variable)_$(metric).png"))
 
-# Snow water equivalent
+
+
+
+
+#=
+function compute_error_all_resolutions(path, res_fine, res_coarse, experiment, variable)
+
+    res = Array{Dict, 2}(length(experiment), length(res_coarse))
+
+    for i in eachindex(experiment), j in eachindex(res_coarse)
+
+        @show i, j
         
-variable = "swe"
+        res[i, j] = compute_error_one_resolution(path,
+                                                 res_fine,
+                                                 res_coarse[j],
+                                                 experiment[i],
+                                                 variable)
+        
+    end
+
+    return res
 
-resall = compute_error_all(pathres, res_fine, experiment, variable)
-
-metric = "absbias"
-
-plot_error_scales(resall, metric, df_cfg)
-title("Snow water equivalent")
-ylabel("Absolute bias (%)")
-
-savefig(joinpath(pathfig, "$(variable)_$(metric).png"))
-
-metric = "nrmse"
-
-plot_error_scales(resall, metric, df_cfg)
-title("Snow water equivalent")
-ylabel("NRMSE (-)")
-
-savefig(joinpath(pathfig, "$(variable)_$(metric).png"))
-
-
-
-
-
-# Interactive plots
-
-#=
-
-df_cfg = cfg_table()
-
-pathres = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/tmp/"
-
-res_fine = "1km"
-
-experiment = 1:32
-
-pathfig = joinpath(dirname(pathof(IcanProj)), "..", "plots", "rank")
-
-variable = "swe"
-
-res_coarse = "50km"
-
-res = compute_error(pathres, res_fine, res_coarse, experiment, variable)
-
-metric = map(x -> x["nrmse"], res)
-
-figure()
-for icfg in 1:32
-    plot(1, metric[icfg], "o")
-    str = "$(df_cfg[icfg, 1])  $(df_cfg[icfg, 3])  $(df_cfg[icfg, 4])  $(df_cfg[icfg, 5])  $(df_cfg[icfg, 6])"
-    annotate(str, xy=(1.02, metric[icfg]))
-    xlim(0.5, 1.5)
-end
-
-=#
-
-
-
-
-
-
-
-
-# Settings
-
-# path = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/tmp/"
-
-# res_fine = "5km"
-
-#res_coarse = ["25km", "50km"]
-
-#experiment = 1:32
-
-
-# Snow depth
-
-#variable = "snowdepth"
-
-#res_hs = compute_error_all_resolutions(path, res_fine, res_coarse, experiment, variable)
-
-
-# Snow water equivalent
-
-#variable = "swe"
-
-#res_swe = compute_error_all_resolutions(path, res_fine, res_coarse, experiment, variable)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Matrices
-
-# nrmse_hs = map(x -> x["nrmse"], res_hs)
-
-# nrmse_swe = map(x -> x["nrmse"], res_swe)
-
-# absbias_hs = map(x -> x["absbias"], res_hs)
-
-#=absbias_swe = map(x -> x["absbias"], res_swe)
-
-
-
-
-# Interactive plots
-
-
-
-=#
-
-
-
-
-
-
-
-
-
-#=
-
-figure()
-plot(nrsme_hs')
-xticks(collect(0:length(res_coarse)-1), res_coarse)
-xlabel("Spatial resolution")
-ylabel("NRMSE")
-title("Snow depth")
-
-
-
-figure()
-plot(nrmse_swe')
-
-figure()
-plot(bias_hs')
-
-figure()
-plot(bias_swe')    
-
-
-
-df_cfg = cfg_table()
-
-mat_cfg = convert(Array{Int64,2}, df_cfg)
-
-p = sortperm(absbias_swe[:,end])
-imshow(mat_cfg[reverse(p),:])
-
-
-var = absbias_swe
-
-
-figure()
-for icfg in 1:32
-    data = var[icfg, :]
-    plot(data)
-    xticks(collect(0:length(data)-1), res_coarse)
-  #  xlabel("Spatial resolution")
-#    ylabel("NRMSE")
- #   title("Snow depth")
-    annotate(string([df_cfg[icfg, i] for i in 1:6]), xy=(length(data)-1, data[end]))
-    xlim(-0.5, length(data)-0.5)
 end
 =#
 
 
-
-#=
-
-# Settings
-
-file_fine = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/tmp/results_1/snowdepth_1km.nc"
-
-file_coarse = "/data02/Ican/vic_sim/fsm_past_1km/netcdf/tmp/results_1/snowdepth_50km.nc"
-
-#id_fine = "ind_senorge"
-
-#id_coarse = "ind_50km"
-
-variable = "snowdepth"
-
-
-# Load data
-
-df_links = link_results(file_fine, file_coarse) #, id_fine, id_coarse)
-
-hs_coarse, hs_aggregated = unify_results(file_fine, file_coarse, df_links, variable)
-
-
-# Compute metrics
-
-rmse = sqrt.(mean((hs_coarse - hs_aggregated).^2 ,1))
-
-meanref = mean(hs_aggregated, 1)
-
-meancmp = mean(hs_coarse, 1)
-
-nrmse = rmse ./ meanref
-
-bias = meancmp ./ meanref
-
-
-# Project to map
-
-rmse_map = project_results(rmse[:], df_links)
-
-meanref_map = project_results(meanref[:], df_links)
-
-meancmp_map = project_results(meancmp[:], df_links)
-
-nrmse_map = project_results(nrmse[:], df_links)
-
-bias_map = project_results(bias[:], df_links)
-
-
-# Plot maps
-
-figure()
-imshow(meanref_map)
-cb = colorbar()
-cb[:set_label]("Snow depth (m)")
-title("Fine scale run")
-
-
-figure()
-imshow(meancmp_map)
-cb = colorbar()
-cb[:set_label]("Snow depth (m)")
-title("Coarse scale run")
-
-
-figure()
-imshow(bias_map)
-cb = colorbar()
-cb[:set_label]("Bias (-)")
-title("Snow depth - coarse divded by fine scale")
-
-
-figure()
-imshow(nrmse_map)
-cb = colorbar()
-cb[:set_label]("NRMSE (-)")
-title("Snow depth")
-
-=#
