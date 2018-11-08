@@ -71,7 +71,8 @@ function link_results(file_fine::String, file_coarse::String) #, id_fine, id_coa
     
     df_links = DataFrame(id_fine = df_meta[Symbol(id_fine)],
                          id_coarse = df_meta[Symbol(id_coarse)],
-                         ind_julia = df_meta[:ind_julia])
+                         ind_julia = df_meta[:ind_julia],
+                         elev = df_meta[:elev])
 
     df_links = join(df_links, df_fine, on = :id_fine)
 
@@ -102,7 +103,7 @@ function unify_results(file_fine, file_coarse, df_links, variable)
     
     var_fine = ncread(file_fine, variable)
 
-    dim_space = ncread(file_fine, "id")
+    dim_space = ncread(file_fine, "id")  # convert to int?
 
     if size(var_fine, 2) != length(dim_space)
         var_fine = var_fine'
@@ -110,7 +111,7 @@ function unify_results(file_fine, file_coarse, df_links, variable)
     
     var_coarse = ncread(file_coarse, variable)
 
-    dim_space = ncread(file_coarse, "id")
+    dim_space = ncread(file_coarse, "id")  # convert to int?
 
     if size(var_coarse, 2) != length(dim_space)
         var_coarse = var_coarse'
@@ -121,12 +122,28 @@ function unify_results(file_fine, file_coarse, df_links, variable)
     ngrids = fill(0.0, size(var_coarse, 2))
 
     for row in eachrow(df_links)
-        
-        var_agg[:, row[:nc_coarse]] += var_fine[:, row[:nc_fine]] / row[:n_sum]
 
-        ngrids[row[:nc_coarse]] += 1 
+        # This works even though some of the gridcells lack values
+
+        tmp = var_fine[:, row[:nc_fine]]
+
+        if !any(isnan.(tmp))
+
+            var_agg[:, row[:nc_coarse]] += var_fine[:, row[:nc_fine]]
+            
+            ngrids[row[:nc_coarse]] += 1 
+
+        end
+        
+        # This should work if all grid cells have results
+
+        # var_agg[:, row[:nc_coarse]] += var_fine[:, row[:nc_fine]] / row[:n_sum]
+
+        # ngrids[row[:nc_coarse]] += 1 
 
     end
+
+    var_agg = var_agg ./ repeat(permutedims(ngrids), size(var_agg, 1))
 
     ncclose()
     
