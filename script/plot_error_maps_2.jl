@@ -3,7 +3,7 @@ using Statistics
 using PyPlot
 
 
-function plot_maps(cfg, variable, unit, path_results)
+function plot_maps(cfg, variable, unit, path_results, limits_bias, limits_rmse)
 
   # File path_results
 
@@ -44,43 +44,49 @@ function plot_maps(cfg, variable, unit, path_results)
   # Plot maps
 
   figure()
-  imshow(rmse_map)
+  imshow(rmse_map, vmin = limits_rmse[1], vmax = limits_rmse[2])
   cb = colorbar()
   cb[:set_label]("RMSE ($(unit))")
-  title(variable)
-  savefig(joinpath(path_results, "$(variable)_rmse.png"))
+  cb[:set_clim](limits_rmse)
+  title("$(variable) $(cfg)")
+  savefig(joinpath(path_results, "$(variable)_rmse_$(cfg).png"))
   close()
 
+  #=
   figure()
   imshow(nrmse_map)
   cb = colorbar()
   cb[:set_label]("NRMSE (-)")
-  title(variable)
-  savefig(joinpath(path_results, "$(variable)_nrmse.png"))
+  title("$(variable) $(cfg)")
+  savefig(joinpath(path_results, "$(variable)_nrmse_$(cfg).png"))
   close()
+  =#
 
   figure()
-  imshow(bias_map)
+  imshow(bias_map, vmin = limits_bias[1], vmax = limits_bias[2])
   cb = colorbar()
   cb[:set_label]("BIAS ($(unit))")
-  title(variable)
-  savefig(joinpath(path_results, "$(variable)_bias.png"))
+  cb[:set_clim](limits_bias)
+  title("$(variable) $(cfg)")
+  savefig(joinpath(path_results, "$(variable)_bias_$(cfg).png"))
   close()
 
+  #=
   figure()
   imshow(perc_bias_map)
   cb = colorbar()
   cb[:set_label]("BIAS (%)")
-  title(variable)
-  savefig(joinpath(path_results, "$(variable)_perc_bias.png"))
+  title("$(variable) $(cfg)")
+  savefig(joinpath(path_results, "$(variable)_perc_bias_$(cfg).png"))
   close()
+  =#
 
 end
 
 
 # Global settings
 
-cfg = 32
+cfg = 30
 
 path_results = joinpath(dirname(pathof(IcanProj)), "..", "plots", "error_maps_2")
 
@@ -91,7 +97,7 @@ variable = "swe"
 
 unit = "mm"
 
-plot_maps(cfg, variable, unit, path_results)
+plot_maps(cfg, variable, unit, path_results, (-30, 30), (0, 80))
 
 
 # Plot latent heat exchange
@@ -100,7 +106,7 @@ variable = "latmo"
 
 unit = "W/m2"
 
-plot_maps(cfg, variable, unit, path_results)
+plot_maps(cfg, variable, unit, path_results, (-1.5, 3.0), (0, 6))
 
 
 # Plot sensible heat exchange
@@ -109,7 +115,7 @@ variable = "hatmo"
 
 unit = "W/m2"
 
-plot_maps(cfg, variable, unit, path_results)
+plot_maps(cfg, variable, unit, path_results, (-2, 1), (0, 5.5))
 
 
 # Plot net radiation
@@ -118,7 +124,7 @@ variable = "rnet"
 
 unit = "W/m2"
 
-plot_maps(cfg, variable, unit, path_results)
+plot_maps(cfg, variable, unit, path_results, (-1, 1), (0, 3))
 
 
 
