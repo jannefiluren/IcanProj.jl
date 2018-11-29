@@ -1,9 +1,10 @@
 using IcanProj
 using Statistics
 using PyPlot
+using PyCall
 
 
-function plot_maps(cfg, variable, unit, path_results, limits_bias, limits_rmse)
+function compute_metrics(cfg, variable)
 
   # File path_results
 
@@ -41,45 +42,9 @@ function plot_maps(cfg, variable, unit, path_results, limits_bias, limits_rmse)
 
   perc_bias_map = project_results(perc_bias[:], df_links)
 
-  # Plot maps
+  # Return results
 
-  figure()
-  imshow(rmse_map, vmin = limits_rmse[1], vmax = limits_rmse[2])
-  cb = colorbar()
-  cb[:set_label]("RMSE ($(unit))")
-  cb[:set_clim](limits_rmse)
-  title("$(variable) $(cfg)")
-  savefig(joinpath(path_results, "$(variable)_rmse_$(cfg).png"))
-  close()
-
-  #=
-  figure()
-  imshow(nrmse_map)
-  cb = colorbar()
-  cb[:set_label]("NRMSE (-)")
-  title("$(variable) $(cfg)")
-  savefig(joinpath(path_results, "$(variable)_nrmse_$(cfg).png"))
-  close()
-  =#
-
-  figure()
-  imshow(bias_map, vmin = limits_bias[1], vmax = limits_bias[2])
-  cb = colorbar()
-  cb[:set_label]("BIAS ($(unit))")
-  cb[:set_clim](limits_bias)
-  title("$(variable) $(cfg)")
-  savefig(joinpath(path_results, "$(variable)_bias_$(cfg).png"))
-  close()
-
-  #=
-  figure()
-  imshow(perc_bias_map)
-  cb = colorbar()
-  cb[:set_label]("BIAS (%)")
-  title("$(variable) $(cfg)")
-  savefig(joinpath(path_results, "$(variable)_perc_bias_$(cfg).png"))
-  close()
-  =#
+  return rmse_map, bias_map
 
 end
 
@@ -91,58 +56,183 @@ cfg = 30
 path_results = joinpath(dirname(pathof(IcanProj)), "..", "plots", "error_maps_2")
 
 
-# Plot snow water equivalent
+# Compute metrics
 
-variable = "swe"
+rmse_swe, bias_swe = compute_metrics(cfg, "swe")
 
-unit = "mm"
+rmse_latmo, bias_latmo = compute_metrics(cfg, "latmo")
 
-plot_maps(cfg, variable, unit, path_results, (-30, 30), (0, 80))
+rmse_hatmo, bias_hatmo = compute_metrics(cfg, "hatmo")
 
-
-# Plot latent heat exchange
-
-variable = "latmo"
-
-unit = "W/m2"
-
-plot_maps(cfg, variable, unit, path_results, (-1.5, 3.0), (0, 6))
+rmse_rnet, bias_rnet = compute_metrics(cfg, "rnet")
 
 
-# Plot sensible heat exchange
+# Plot rmse
 
-variable = "hatmo"
+py"""
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(2, 2, tight_layout=True, figsize = (8, 8))
+"""
 
-unit = "W/m2"
+py"""
+data_map = np.array($(rmse_swe))
+data_vec = data_map[~np.isnan(data_map)]
 
-plot_maps(cfg, variable, unit, path_results, (-2, 1), (0, 5.5))
+map = ax[0,0].imshow(data_map) #, vmin = 0, vmax = 85)
+cb = fig.colorbar(map, ax=ax[0,0], fraction=0.046, pad=0.04)
+cb.set_label("RMSE ($mm$)")
+ax[0,0].annotate("(A) SWE", xy=(0.1,0.9), xycoords="axes fraction")
+ax[0,0].axis('off')
+inset_ax = ax[0,0].inset_axes([0.6, 0.15, 0.3, 0.3])
+inset_ax.hist(data_vec, density=True, bins=10, color="gray")
+inset_ax.tick_params(axis='both', which='major', labelsize=6)
+inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.set_xlabel("RMSE ($mm$)", fontsize = 8)
+inset_ax.set_ylabel("Density (-)", fontsize = 8)
+"""
+
+py"""
+data_map = np.array($(rmse_rnet))
+data_vec = data_map[~np.isnan(data_map)]
+
+map = ax[0,1].imshow(data_map) #, vmin = 0, vmax = 2.8)
+cb = fig.colorbar(map, ax=ax[0,1], fraction=0.046, pad=0.04)
+cb.set_label("RMSE ($W/m^2$)")
+ax[0,1].annotate("(B) RNET", xy=(0.1,0.9), xycoords="axes fraction")
+ax[0,1].axis('off')
+inset_ax = ax[0,1].inset_axes([0.6, 0.15, 0.3, 0.3])
+inset_ax.hist(data_vec, density=True, bins=10, color="gray")
+inset_ax.tick_params(axis='both', which='major', labelsize=6)
+inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.set_xlabel("RMSE ($W/m^2$)", fontsize = 8)
+inset_ax.set_ylabel("Density (-)", fontsize = 8)
+"""
+
+py"""
+data_map = np.array($(rmse_hatmo))
+data_vec = data_map[~np.isnan(data_map)]
+
+map = ax[1,0].imshow(data_map) #, vmin = 0, vmax = 2.8)
+cb = fig.colorbar(map, ax=ax[1,0], fraction=0.046, pad=0.04)
+cb.set_label("RMSE ($W/m^2$)")
+ax[1,0].annotate("(C) HATMO", xy=(0.1,0.9), xycoords="axes fraction")
+ax[1,0].axis('off')
+inset_ax = ax[1,0].inset_axes([0.6, 0.15, 0.3, 0.3])
+inset_ax.hist(data_vec, density=True, bins=10, color="gray")
+inset_ax.tick_params(axis='both', which='major', labelsize=6)
+inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.set_xlabel("RMSE ($W/m^2$)", fontsize = 8)
+inset_ax.set_ylabel("Density (-)", fontsize = 8)
+"""
+
+py"""
+data_map = np.array($(rmse_latmo))
+data_vec = data_map[~np.isnan(data_map)]
+
+map = ax[1,1].imshow(data_map) #, vmin = 0, vmax = 2.8)
+cb = fig.colorbar(map, ax=ax[1,1], fraction=0.046, pad=0.04)
+cb.set_label("RMSE ($W/m^2$)")
+ax[1,1].annotate("(D) LATMO", xy=(0.1,0.9), xycoords="axes fraction")
+ax[1,1].axis('off')
+inset_ax = ax[1,1].inset_axes([0.6, 0.15, 0.3, 0.3])
+inset_ax.hist(data_vec, density=True, bins=10, color="gray")
+inset_ax.tick_params(axis='both', which='major', labelsize=6)
+inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.set_xlabel("RMSE ($W/m^2$)", fontsize = 8)
+inset_ax.set_ylabel("Density (-)", fontsize = 8)
+"""
+
+py"""
+plt.savefig($(joinpath(path_results, "maps_rmse.png")), dpi=300)
+plt.close()
+"""
 
 
-# Plot net radiation
+# Plot bias
 
-variable = "rnet"
+py"""
+import matplotlib.pyplot as plt
+import numpy as np
+fig, ax = plt.subplots(2, 2, tight_layout=True, figsize = (8, 8))
+"""
 
-unit = "W/m2"
+py"""
+data_map = np.array($(bias_swe))
+data_vec = data_map[~np.isnan(data_map)]
+limit = np.max(np.abs(data_vec))
 
-plot_maps(cfg, variable, unit, path_results, (-1, 1), (0, 3))
+map = ax[0,0].imshow(data_map, vmin = -limit, vmax = limit, cmap="jet")
+cb = fig.colorbar(map, ax=ax[0,0], fraction=0.046, pad=0.04)
+cb.set_label("Bias ($mm$)")
+ax[0,0].annotate("(A) SWE", xy=(0.1,0.9), xycoords="axes fraction")
+ax[0,0].axis('off')
+inset_ax = ax[0,0].inset_axes([0.6, 0.15, 0.3, 0.3])
+inset_ax.hist(data_vec, density=True, bins=10, color="gray")
+inset_ax.tick_params(axis='both', which='major', labelsize=6)
+inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.set_xlabel("Bias ($mm$)", fontsize = 8)
+inset_ax.set_ylabel("Density (-)", fontsize = 8)
+inset_ax.set_xlim(-limit, limit)
+"""
 
+py"""
+data_map = np.array($(bias_rnet))
+data_vec = data_map[~np.isnan(data_map)]
+limit = np.max(np.abs(data_vec))
 
+map = ax[0,1].imshow(data_map, vmin = -limit, vmax = limit, cmap="jet")
+cb = fig.colorbar(map, ax=ax[0,1], fraction=0.046, pad=0.04)
+cb.set_label("Bias ($W/m^2$)")
+ax[0,1].annotate("(B) RNET", xy=(0.1,0.9), xycoords="axes fraction")
+ax[0,1].axis('off')
+inset_ax = ax[0,1].inset_axes([0.6, 0.15, 0.3, 0.3])
+inset_ax.hist(data_vec, density=True, bins=10, color="gray")
+inset_ax.tick_params(axis='both', which='major', labelsize=6)
+inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.set_xlabel("Bias ($W/m^2$)", fontsize = 8)
+inset_ax.set_ylabel("Density (-)", fontsize = 8)
+inset_ax.set_xlim(-limit, limit)
+"""
 
+py"""
+data_map = np.array($(bias_hatmo))
+data_vec = data_map[~np.isnan(data_map)]
+limit = np.max(np.abs(data_vec))
 
+map = ax[1,0].imshow(data_map, vmin = -limit, vmax = limit, cmap="jet")
+cb = fig.colorbar(map, ax=ax[1,0], fraction=0.046, pad=0.04)
+cb.set_label("Bias ($W/m^2$)")
+ax[1,0].annotate("(C) HATMO", xy=(0.1,0.9), xycoords="axes fraction")
+ax[1,0].axis('off')
+inset_ax = ax[1,0].inset_axes([0.6, 0.15, 0.3, 0.3])
+inset_ax.hist(data_vec, density=True, bins=10, color="gray")
+inset_ax.tick_params(axis='both', which='major', labelsize=6)
+inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.set_xlabel("Bias ($W/m^2$)", fontsize = 8)
+inset_ax.set_ylabel("Density (-)", fontsize = 8)
+inset_ax.set_xlim(-limit, limit)
+"""
 
-#= 
-# Plot time series
+py"""
+data_map = np.array($(bias_latmo))
+data_vec = data_map[~np.isnan(data_map)]
+limit = np.max(np.abs(data_vec))
 
-imin = argmin(rmse[:])
-imax = argmax(rmse[:])
+map = ax[1,1].imshow(data_map, vmin = -limit, vmax = limit, cmap="jet")
+cb = fig.colorbar(map, ax=ax[1,1], fraction=0.046, pad=0.04)
+cb.set_label("Bias ($W/m^2$)")
+ax[1,1].annotate("(D) LATMO", xy=(0.1,0.9), xycoords="axes fraction")
+ax[1,1].axis('off')
+inset_ax = ax[1,1].inset_axes([0.6, 0.15, 0.3, 0.3])
+inset_ax.hist(data_vec, density=True, bins=10, color="gray")
+inset_ax.tick_params(axis='both', which='major', labelsize=6)
+inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.set_xlabel("Bias ($W/m^2$)", fontsize = 8)
+inset_ax.set_ylabel("Density (-)", fontsize = 8)
+inset_ax.set_xlim(-limit, limit)
+"""
 
-figure()
-plot(data_coarse[:, imin])
-plot(data_aggregated[:, imin])
-title("Smallest error")
-
-figure()
-plot(data_coarse[:, imax])
-plot(data_aggregated[:, imax])
-title("Largest error")
- =#
+py"""
+plt.savefig($(joinpath(path_results, "maps_bias.png")), dpi=300)
+plt.close()
+"""
