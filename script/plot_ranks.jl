@@ -110,15 +110,45 @@ res_all = load_results()
 figpath = joinpath(dirname(pathof(IcanProj)), "..", "plots", "rank")
 
 
-filename = joinpath(figpath, "snowdepth_nse.png")
+#filename = joinpath(figpath, "snowdepth_nse.png")
 
-nseres, spaceres = error_matrix(res_all, "snowdepth", "nse")
+#res, spaceres = error_matrix(res_all, "snowdepth", "nse")
 
-plot_rank(1 .- nseres[:,end], "Ranking from lowest to highest error", "Snowdepth", filename)
+#plot_rank(1 .- res[:,end], "Ranking from lowest to highest error", "Snowdepth", filename)
 
+
+# Snow water equivalent
 
 filename = joinpath(figpath, "swe_nse.png")
 
-nseres, spaceres = error_matrix(res_all, "swe", "nse")
+res, spaceres = error_matrix(res_all, "swe", "nse")
 
-plot_rank(1 .- nseres[:,end], "Ranking from lowest to highest error", "SWE", filename)
+plot_rank(1 .- res[:,end], "Ranking from lowest to highest error", "SWE", filename)
+
+
+# Latent heat exchange
+
+filename = joinpath(figpath, "latmo_nse.png")
+
+res, spaceres = error_matrix(res_all, "latmo", "nse")
+
+plot_rank(1 .- res[:,end], "Ranking from lowest to highest error", "LATMO", filename)
+
+
+# Sensible heat exchange
+
+filename = joinpath(figpath, "hatmo_nse.png")
+
+res, spaceres = error_matrix(res_all, "hatmo", "nse")
+
+plot_rank(1 .- res[:,end], "Ranking from lowest to highest error", "HATMO", filename)
+
+
+# Net radiation
+
+filename = joinpath(figpath, "rnet_nse.png")
+
+res, spaceres = error_matrix(res_all, "rnet", "nse")
+
+plot_rank(1 .- res[:,end], "Ranking from lowest to highest error", "RNET", filename)
+
