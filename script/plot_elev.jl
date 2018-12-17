@@ -7,6 +7,7 @@ using Statistics
 
 import IcanProj.project_results
 
+
 function mean_elevation(df)
 
     for spaceres in ["5km", "10km", "25km", "50km"]
@@ -39,7 +40,6 @@ function project_results(df::DataFrame, on::Symbol)
     return map_values
 
 end
-
 
 
 function plot_map(df, variable, cb_label, cb_unit, title_label, figpath)
@@ -90,11 +90,6 @@ df_links = mean_elevation(df_links)
 
 figpath = joinpath(dirname(pathof(IcanProj)), "..", "plots", "altitudes")
 
-# df = df_links
-# variable = :elev
-# cb_label = "Altitude"
-# title_label = "Resolution 1km"
-
 
 plot_map(df_links, :elev, "Altitude", "(m)", "Resolution 1km", figpath)
 
@@ -105,3 +100,62 @@ plot_map(df_links, :mean_10km, "Altitude", "(m)", "Resolution 10km", figpath)
 plot_map(df_links, :mean_25km, "Altitude", "(m)", "Resolution 25km", figpath)
 
 plot_map(df_links, :mean_50km, "Altitude", "(m)", "Resolution 50km", figpath)
+
+
+
+map_1km = project_results(df_links, :elev)
+
+map_10km = project_results(df_links, :mean_10km)
+
+map_50km = project_results(df_links, :mean_50km)
+
+
+file = joinpath(figpath, "elevations.png")
+
+
+py"""
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+fig, ax = plt.subplots(1, 3)
+
+fig.set_size_inches(12, 8)
+
+im = ax[0].imshow($(map_1km), cmap = 'jet', vmin = -0.1, vmax = 2301)
+ax[0].grid(linestyle='dotted')
+ax[0].annotate('(a) 1 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
+ax[0].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
+
+divider = make_axes_locatable(ax[0])
+cax = divider.append_axes("right", size="5%", pad=0.05)
+cb = plt.colorbar(im, cax=cax)
+
+cb.remove()
+
+im = ax[1].imshow($(map_10km), cmap = 'jet', vmin = -0.1, vmax = 2301)
+ax[1].grid(linestyle='dotted')
+ax[1].annotate('(b) 10 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
+ax[1].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
+
+divider = make_axes_locatable(ax[1])
+cax = divider.append_axes("right", size="5%", pad=0.05)
+cb = plt.colorbar(im, cax=cax)
+
+cb.remove()
+
+im = ax[2].imshow($(map_50km), cmap = 'jet', vmin = -0.1, vmax = 2301)
+ax[2].grid(linestyle='dotted')
+ax[2].annotate('(c) 50 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
+ax[2].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
+
+divider = make_axes_locatable(ax[2])
+cax = divider.append_axes("right", size="5%", pad=0.05)
+cb = plt.colorbar(im, cax=cax)
+cb.set_label("Altitude (m.a.s.l)")
+
+fig.savefig($(file), dpi = 600, bbox_inches='tight')
+
+"""
+
+
