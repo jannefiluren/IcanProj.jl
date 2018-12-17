@@ -156,6 +156,8 @@ cb.set_label("Altitude (m.a.s.l)")
 
 fig.savefig($(file), dpi = 600, bbox_inches='tight')
 
+plt.close('all')
+
 """
 
 
