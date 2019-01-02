@@ -56,8 +56,6 @@ function plot_map(df, variable, cb_label, cb_unit, title_label, figpath)
 
     fig, ax = plt.subplots()
 
-    #fig.figsize = (6, 12)
-
     ax.set_title($(title_label))
 
     img_plot = ax.imshow($(resmap), cmap = 'jet', vmin = -0.1, vmax = 2301)
@@ -84,12 +82,16 @@ function plot_map(df, variable, cb_label, cb_unit, title_label, figpath)
 end
 
 
+# Compute average elevation
+
 df_links = CSV.File(joinpath(dirname(pathof(IcanProj)), "..", "data", "df_links.csv")) |> DataFrame
 
 df_links = mean_elevation(df_links)
 
-figpath = joinpath(dirname(pathof(IcanProj)), "..", "plots", "altitudes")
 
+# Plot results in seperate figures
+
+figpath = joinpath(dirname(pathof(IcanProj)), "..", "plots", "altitudes")
 
 plot_map(df_links, :elev, "Altitude", "(m)", "Resolution 1km", figpath)
 
@@ -102,6 +104,7 @@ plot_map(df_links, :mean_25km, "Altitude", "(m)", "Resolution 25km", figpath)
 plot_map(df_links, :mean_50km, "Altitude", "(m)", "Resolution 50km", figpath)
 
 
+# Collect elevation maps in one plot
 
 map_1km = project_results(df_links, :elev)
 
@@ -109,9 +112,7 @@ map_10km = project_results(df_links, :mean_10km)
 
 map_50km = project_results(df_links, :mean_50km)
 
-
 file = joinpath(figpath, "elevations.png")
-
 
 py"""
 
@@ -124,7 +125,7 @@ fig.set_size_inches(12, 8)
 
 im = ax[0].imshow($(map_1km), cmap = 'jet', vmin = -0.1, vmax = 2301)
 ax[0].grid(linestyle='dotted')
-ax[0].annotate('(a) 1 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
+ax[0].annotate('(A) 1 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
 ax[0].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
 
 divider = make_axes_locatable(ax[0])
@@ -135,7 +136,7 @@ cb.remove()
 
 im = ax[1].imshow($(map_10km), cmap = 'jet', vmin = -0.1, vmax = 2301)
 ax[1].grid(linestyle='dotted')
-ax[1].annotate('(b) 10 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
+ax[1].annotate('(B) 10 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
 ax[1].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
 
 divider = make_axes_locatable(ax[1])
@@ -146,7 +147,7 @@ cb.remove()
 
 im = ax[2].imshow($(map_50km), cmap = 'jet', vmin = -0.1, vmax = 2301)
 ax[2].grid(linestyle='dotted')
-ax[2].annotate('(c) 50 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
+ax[2].annotate('(C) 50 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
 ax[2].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
 
 divider = make_axes_locatable(ax[2])
