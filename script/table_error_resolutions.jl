@@ -13,6 +13,7 @@ function compute_statistics(var_coarse, var_ref, mask)
     nse = fill(0.0, n)
     r = fill(0.0, n)
     bias = fill(0.0, n)
+    rmse = fill(0.0, n)
     
     for i in 1:n
 
@@ -28,7 +29,9 @@ function compute_statistics(var_coarse, var_ref, mask)
 
             r[i] = cor(sim, ref)
 
-            bias[i] = mean(sim - ref)
+            bias[i] = mean(sim .- ref)
+
+            rmse[i] = sqrt(mean((sim .- ref).^2))
 
         else
 
@@ -38,11 +41,13 @@ function compute_statistics(var_coarse, var_ref, mask)
 
             bias[i] = NaN
 
+            rmse[i] = NaN
+
         end
         
     end
 
-    return nse, r, bias
+    return nse, r, bias, rmse
 
 end
 
@@ -87,7 +92,7 @@ function results_table(path, cfgs, variables, spaceres)
 
             var_coarse, var_ref, ngrids = unify_results(file_fine, file_coarse, df_links, v)
 
-            nse, r, bias = compute_statistics(var_coarse, var_ref, mask)
+            nse, r, bias, rmse = compute_statistics(var_coarse, var_ref, mask)
 
             nse_name = Symbol("nse_$(v)_cfg$(c)")
 
@@ -95,11 +100,15 @@ function results_table(path, cfgs, variables, spaceres)
 
             bias_name = Symbol("bias_$(v)_cfg$(c)")
 
+            rmse_name = Symbol("rmse_$(v)_cfg$(c)")
+
             df_res[nse_name] = nse
 
             df_res[r_name] = r
 
             df_res[bias_name] = bias
+
+            df_res[rmse_name] = rmse
 
             df_res[:ngrids] = ngrids 
 
