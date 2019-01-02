@@ -31,42 +31,42 @@ file_rnet = joinpath(path_results, "correlation_error_rnet.csv")
 df_rnet = CSV.read(file_rnet, delim = ";") |> DataFrame
 
 
+# Dataframe for bias and rmse
+
+df_rmse = DataFrame(swe = df_swe.r_swe_elev_for_rmse,
+                    latmo = df_latmo.r_latmo_elev_for_rmse,
+                    hatmo = df_hatmo.r_hatmo_elev_for_rmse,
+                    rnet = df_rnet.r_rnet_elev_for_rmse)
+
+df_bias = DataFrame(swe = df_swe.r_swe_elev_for_bias,
+                    latmo = df_latmo.r_latmo_elev_for_bias,
+                    hatmo = df_hatmo.r_hatmo_elev_for_bias,
+                    rnet = df_rnet.r_rnet_elev_for_bias)
+
+
+
+
 # Plot results
 
-cols = [:ilwr_std, :iswr_std, :snowf_std, :tair_std, :rhum_std, :wind_std, :elev_std]
+fig = figure(figsize = (7, 3))
 
-fig = figure(figsize = (7, 8))
-
-subplots_adjust(hspace=0.0)
-
-subplot(411)
-boxplot(convert(Array{Float64}, df_swe[:, cols]), 0, "")
+# subplot(211)
+boxplot(convert(Array{Float64}, df_rmse).^2, 0, "")
 ylim([0, 1])
-yticks(0.1:0.2:0.9)
-annotate("SWE",	xy=[0.85; 0.2], xycoords="axes fraction", fontsize=10.0)
+yticks(0:0.2:1)
+ylabel("Squared correlation coefficient")
+xticks(collect(1:4), uppercase.(String.(names(df_bias))))
+#annotate("(a)", xy = [0.9,0.2], xycoords = "axes fraction")
 
-subplot(412)
-boxplot(convert(Array{Float64}, df_latmo[:, cols]), 0, "")
-ylim([0, 1])
-yticks(0.1:0.2:0.9)
-annotate("LATMO",	xy=[0.85; 0.2], xycoords="axes fraction", fontsize=10.0)
+# subplot(212)
+# boxplot(convert(Array{Float64}, df_bias), 0, "")
+# ylim([-1, 1])
+# yticks(-1:0.5:1)
+# ylabel("Correlation coefficient between\nbias and topograpic variability")
+# xticks(collect(1:4), uppercase.(String.(names(df_bias))))
+# annotate("(b)", xy = [0.9,0.2], xycoords = "axes fraction")
 
-subplot(413)
-boxplot(convert(Array{Float64}, df_hatmo[:, cols]), 0, "")
-ylim([0, 1])
-yticks(0.1:0.2:0.9)
-annotate("HATMO",	xy=[0.85; 0.2], xycoords="axes fraction", fontsize=10.0)
-
-subplot(414)
-boxplot(convert(Array{Float64}, df_rnet[:, cols]), 0, "")
-ylim([0, 1])
-xticks(collect(1:length(cols)), [String(c)[1:end-4] for c in cols])
-yticks(0.1:0.2:0.9)
-annotate("RNET",	xy=[0.85; 0.2], xycoords="axes fraction", fontsize=10.0)
-
-fig[:text](0.04, 0.5, "Correlation between scale error and input variability", va="center", rotation="vertical")
-
-# Save figure
+# fig[:align_ylabels]()
 
 savefig(joinpath(path_figure, "correlation_plot.png"), dpi = 600)
 
