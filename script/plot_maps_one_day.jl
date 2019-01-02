@@ -5,6 +5,7 @@ using PyPlot
 using Dates
 using CSV
 
+
 # Settings
 
 timeplot = DateTime(2011,4,1,0)
@@ -37,10 +38,12 @@ data_forest = dropdims(data_forest, dims = 2)
 data_open = dropdims(data_open, dims = 2)
 
 
-# Create dataframe for linking results_1
+# Create dataframe for linking results
 
-df = DataFrame(ind_senorge = convert.(Int, ncread(file_forest, "id")),
-               ind_linear = 1:length(df[:ind_senorge]))
+ind_senorge = convert.(Int, ncread(file_forest, "id"))
+
+df = DataFrame(ind_senorge = ind_senorge,
+               ind_linear = 1:length(ind_senorge))
 
 df_final = join(df_links, df, on=:ind_senorge)
 
@@ -51,7 +54,8 @@ map_forest = project_results(data_forest, df_final, :ind_linear)
 
 figure()
 imshow(map_forest)
-colorbar()
+cb = colorbar()
+cb[:set_label]("SWE (mm)")
 
 map_open = project_results(data_open, df_final, :ind_linear)
 
