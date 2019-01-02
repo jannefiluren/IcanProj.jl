@@ -8,11 +8,13 @@ using Statistics
 
 # Settings
 
-variable = "latmo"
+cfg = 32
 
-file_fine = "/data04/jmg/fsm_simulations/netcdf/fsmres_open/results_32/$(variable)_1km.nc"
+variable = "rnet"
 
-file_coarse = "/data04/jmg/fsm_simulations/netcdf/fsmres_open/results_32/$(variable)_50km.nc"
+file_fine = "/data04/jmg/fsm_simulations/netcdf/fsmres_forest/results_$(cfg)/$(variable)_1km.nc"
+
+file_coarse = "/data04/jmg/fsm_simulations/netcdf/fsmres_forest/results_$(cfg)/$(variable)_50km.nc"
 
 #file_fine = "/data04/jmg/fsm_simulations/netcdf/forcings_st/$(variable)_1km.nc"
 
@@ -23,22 +25,22 @@ file_coarse = "/data04/jmg/fsm_simulations/netcdf/fsmres_open/results_32/$(varia
 
 df_links = link_results(file_fine, file_coarse)
 
-hs_coarse, hs_aggregated = unify_results(file_fine, file_coarse, df_links, variable)
+data_coarse, data_aggregated, ngrids  = unify_results(file_fine, file_coarse, df_links, variable)
 
 
 # Compute metrics
 
-rmse = sqrt.(mean((hs_coarse .- hs_aggregated).^2 , dims = 1))
+rmse = sqrt.(mean((data_coarse .- data_aggregated).^2 , dims = 1))
 
-meanref = mean(hs_aggregated, dims = 1)
+meanref = mean(data_aggregated, dims = 1)
 
-meancmp = mean(hs_coarse, dims = 1)
+meancmp = mean(data_coarse, dims = 1)
 
 nrmse = rmse ./ meanref
 
-bias = (meancmp .- meanref)# ./ meanref
+bias = (meancmp .- meanref)
 
-nse = 1 .- var(hs_coarse .- hs_aggregated, dims = 1) ./ var(hs_aggregated .- mean(hs_aggregated, dims = 1), dims = 1)
+nse = 1 .- var(data_coarse .- data_aggregated, dims = 1) ./ var(data_aggregated .- mean(data_aggregated, dims = 1), dims = 1)
 
 
 # Project to map
@@ -56,51 +58,17 @@ bias_map = project_results(bias[:], df_links)
 nse_map = project_results(nse[:], df_links)
 
 
-#=
-# Plot maps
+# Plot results
 
 figure()
-imshow(meanref_map)
+imshow(rmse_map)
 cb = colorbar()
-cb[:set_label](variable)
-title("Fine scale run")
-
-figure()
-imshow(meancmp_map)
-cb = colorbar()
-cb[:set_label](variable)
-title("Coarse scale run")
-
-figure()
-imshow(bias_map)
-cb = colorbar()
-cb[:set_label]("Bias (-)")
-title("$(variable) - coarse divded by fine scale")
-
-figure()
-imshow(nrmse_map)
-cb = colorbar()
-cb[:set_label]("NRMSE (-)")
+cb[:set_label]("RMSE (-)")
 title(variable)
-=#
+
 
 figure()
 imshow(bias_map)
 cb = colorbar()
 cb[:set_label]("BIAS (-)")
 title(variable)
-
-#=
-for icell in 1:100
-
-    plot(hs_coarse[:,icell], label = "coarse")
-    plot(hs_aggregated[:,icell], label = "fine")
-
-    legend()
-
-    sleep(2)
-
-    close("all")
-
-end
-=#
