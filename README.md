@@ -22,7 +22,16 @@ This repository contains code for performing simulations and analysis for the IC
 
 ## Processing model outputs
 
-- Errors for different spatial scales: `table_error_resolutions.jl`.
+Scripts for producing plots in the manuscript:
+
+- Elevation maps on 1, 10 and 50 km grids (`plot_elev.jl`) 
+- Forcing maps on 1 km grid (`forcings_maps.jl`)
+- Standard deviation in forcings on 10 and 50 km grids (`forcings_maps.jl`)
+- Evaluation against snow depth (`plot_snow_evaluation.jl`)
+- Ranking of configurations (`plot_rank.jl`)
+- Error versus model resolution (`plot_error_resolution.jl`)
+- Maps with bias and rmse (`plot_error_maps_2.jl`)
+- Correlation plot (`plot_error_forcing_correlations.jl`)
 
 ## Data locations
 
