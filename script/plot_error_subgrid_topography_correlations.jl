@@ -44,30 +44,19 @@ df_bias = DataFrame(swe = df_swe.r_swe_elev_for_bias,
                     rnet = df_rnet.r_rnet_elev_for_bias)
 
 
-
-
 # Plot results
 
 fig = figure(figsize = (7, 3))
 
-# subplot(211)
 boxplot(convert(Array{Float64}, df_rmse).^2, 0, "")
 ylim([0, 1])
 yticks(0:0.2:1)
 ylabel("Squared correlation coefficient")
-xticks(collect(1:4), uppercase.(String.(names(df_bias))))
-#annotate("(a)", xy = [0.9,0.2], xycoords = "axes fraction")
-
-# subplot(212)
-# boxplot(convert(Array{Float64}, df_bias), 0, "")
-# ylim([-1, 1])
-# yticks(-1:0.5:1)
-# ylabel("Correlation coefficient between\nbias and topograpic variability")
-# xticks(collect(1:4), uppercase.(String.(names(df_bias))))
-# annotate("(b)", xy = [0.9,0.2], xycoords = "axes fraction")
-
-# fig[:align_ylabels]()
+xticks(collect(1:4), uppercase.(String.(names(df_rmse))))
 
 savefig(joinpath(path_figure, "correlation_plot.png"), dpi = 600)
 
 
+# Print summary statistics
+
+describe(df_rmse)
