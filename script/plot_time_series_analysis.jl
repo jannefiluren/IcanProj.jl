@@ -1,3 +1,7 @@
+
+# Script for creating Figure 14, 15 in scale manuscript
+
+
 using IcanProj
 using Statistics
 using PyPlot
@@ -191,7 +195,7 @@ function plot_inputs()
   ax[4][:set_xlim](xrange)
   ax[4][:set_ylabel]("Incoming shortwave")
 
-  savefig(joinpath(path_figure, "forcings.png"), dpi = 600)
+  savefig(joinpath(path_figure, "forcings.pdf"), dpi = 600)
 
 end
 
@@ -241,12 +245,27 @@ function plot_fsm_heat_fluxes(df_subset, metric, path_figure)
 
   fig[:text](0.02, 0.5, L"$Sensible heat flux (W/m^2)$", va="center", rotation="vertical")
 
-  savefig(joinpath(path_figure, "sensible_heat_fluxes_$(metric).png"), dpi = 600)
+  savefig(joinpath(path_figure, "sensible_heat_fluxes_$(metric).pdf"), dpi = 600)
 
 end
 
 
-function plot_fms_results(cfg, df_subset, fig_title, path_figure, metric, labels)
+function plot_fms_results(df_subset, path_figure, metric)
+
+  # Common to all plots
+
+  xrange = (DateTime(2010, 9 , 1), DateTime(2011, 9, 1))
+  yrange = (-50, 50)
+
+  fig, ax = subplots(4, 2, sharex=true)
+
+  fig[:set_size_inches](12, 10)
+
+  ###############################################################################################
+
+  # Perform analysis for cfg = 30
+  
+  cfg = 30
 
   # Load results
 
@@ -275,79 +294,170 @@ function plot_fms_results(cfg, df_subset, fig_title, path_figure, metric, labels
   rnet_time, rnet_fine, rnet_coarse = load_fsm_data(file_fine, file_coarse, df_subset, variable)
     
   # Plot results
-
-  # xrange = (rnet_time[1], rnet_time[end])
-  xrange = (DateTime(2010, 9 , 1), DateTime(2011, 9, 1))
-  yrange = (-50, 50)
-
-  fig, ax = subplots(4, 1, sharex=true)
-
-  fig[:set_size_inches](6, 10)
-
-  ax[1][:set_title](fig_title)
+  
+  ax[1, 1][:set_title]("Exchng = 0")
 
   # SWE
 
   swe_error = repeat(swe_coarse, 1, size(swe_fine, 2)) - swe_fine
 
-  ax[1][:grid](axis = "x")
-  ax[1][:fill_between](swe_time, minimum(swe_fine, dims=2)[:], maximum(swe_fine, dims=2)[:], color = "gray")
-  ax[1][:plot](swe_time, swe_coarse, color = "blue")
-  ax[1][:plot](swe_time, mean(swe_fine, dims=2)[:], color = "green")
-  ax[1][:set_xlim](xrange)
-  ax[2][:set_ylim](0, 2000)
-  ax[1][:set_ylabel](L"SWE (mm)")
+  ax[1, 1][:grid](axis = "x")
+  ax[1, 1][:fill_between](swe_time, minimum(swe_fine, dims=2)[:], maximum(swe_fine, dims=2)[:], color = "gray")
+  ax[1, 1][:plot](swe_time, swe_coarse, color = "blue")
+  ax[1, 1][:plot](swe_time, mean(swe_fine, dims=2)[:], color = "green")
+  ax[1, 1][:set_xlim](xrange)
+  ax[1, 1][:set_ylim](0, 2000)
+  ax[1, 1][:set_ylabel]("SWE (" * L"mm" * ")")
 
   swe_error = mean(swe_error, dims = 2)
 
-  ax[1][:annotate]("$(labels[1]) Bias = $(round(mean(swe_error), digits = 0)) | RMSE = $(round(sqrt(mean(swe_error.^2)), digits = 0))", xy = (0.05, 0.85), xycoords = "axes fraction")
+  ax[1, 1][:annotate]("(A) Bias = $(round(mean(swe_error), digits = 0)) | RMSE = $(round(sqrt(mean(swe_error.^2)), digits = 0))", xy = (0.05, 0.85), xycoords = "axes fraction")
 
   # RNET
 
   rnet_error = repeat(rnet_coarse, 1, size(rnet_fine, 2)) - rnet_fine
 
-  ax[2][:grid](axis = "x")
-  ax[2][:fill_between](rnet_time, minimum(rnet_error, dims=2)[:], maximum(rnet_error, dims=2)[:], color="gray")
-  ax[2][:plot](rnet_time, mean(rnet_error, dims=2), color = "red")
-  ax[2][:set_xlim](xrange)
-  ax[2][:set_ylim](yrange)
-  ax[2][:set_ylabel](L"$RNET (W/m^2)$")
+  ax[2, 1][:grid](axis = "x")
+  ax[2, 1][:fill_between](rnet_time, minimum(rnet_error, dims=2)[:], maximum(rnet_error, dims=2)[:], color="gray")
+  ax[2, 1][:plot](rnet_time, mean(rnet_error, dims=2), color = "red")
+  ax[2, 1][:set_xlim](xrange)
+  ax[2, 1][:set_ylim](yrange)
+  ax[2, 1][:set_ylabel]("RNET (" * L"$W/m^2$" * ")")
 
   rnet_error = mean(rnet_error, dims = 2)
 
-  ax[2][:annotate]("$(labels[2]) Bias = $(round(mean(rnet_error), digits = 1)) | RMSE = $(round(sqrt(mean(rnet_error.^2)), digits = 1))", xy = (0.05, 0.85), xycoords = "axes fraction")
+  ax[2, 1][:annotate]("(C) Bias = $(round(mean(rnet_error), digits = 1)) | RMSE = $(round(sqrt(mean(rnet_error.^2)), digits = 1))", xy = (0.05, 0.85), xycoords = "axes fraction")
 
   # HATMO
 
   hatmo_error = repeat(hatmo_coarse, 1, size(hatmo_fine, 2)) - hatmo_fine
 
-  ax[3][:grid](axis = "x")
-  ax[3][:fill_between](hatmo_time, minimum(hatmo_error, dims=2)[:], maximum(hatmo_error, dims=2)[:], color="gray")
-  ax[3][:plot](hatmo_time, mean(hatmo_error, dims=2), color = "red")
-  ax[3][:set_xlim](xrange)
-  ax[3][:set_ylim](yrange)
-  ax[3][:set_ylabel](L"$HATMO (W/m^2)$")
+  ax[3, 1][:grid](axis = "x")
+  ax[3, 1][:fill_between](hatmo_time, minimum(hatmo_error, dims=2)[:], maximum(hatmo_error, dims=2)[:], color="gray")
+  ax[3, 1][:plot](hatmo_time, mean(hatmo_error, dims=2), color = "red")
+  ax[3, 1][:set_xlim](xrange)
+  ax[3, 1][:set_ylim](yrange)
+  ax[3, 1][:set_ylabel]("HATMO (" * L"$W/m^2$" * ")")
 
   hatmo_error = mean(hatmo_error, dims = 2)
 
-  ax[3][:annotate]("$(labels[3]) Bias = $(round(mean(hatmo_error), digits = 1)) | RMSE = $(round(sqrt(mean(hatmo_error.^2)), digits = 1))", xy = (0.05, 0.85), xycoords = "axes fraction")
+  ax[3, 1][:annotate]("(E) Bias = $(round(mean(hatmo_error), digits = 1)) | RMSE = $(round(sqrt(mean(hatmo_error.^2)), digits = 1))", xy = (0.05, 0.85), xycoords = "axes fraction")
 
   # LATMO
 
   latmo_error = repeat(latmo_coarse, 1, size(latmo_fine, 2)) - latmo_fine
 
-  ax[4][:grid](axis = "x")
-  ax[4][:fill_between](latmo_time, minimum(latmo_error, dims=2)[:], maximum(latmo_error, dims=2)[:], color="gray")
-  ax[4][:plot](latmo_time, mean(latmo_error, dims=2), color = "red")
-  ax[4][:set_xlim](xrange)
-  ax[4][:set_ylim](yrange)
-  ax[4][:set_ylabel](L"$LATMO (W/m^2)$")
+  ax[4, 1][:grid](axis = "x")
+  ax[4, 1][:fill_between](latmo_time, minimum(latmo_error, dims=2)[:], maximum(latmo_error, dims=2)[:], color="gray")
+  ax[4, 1][:plot](latmo_time, mean(latmo_error, dims=2), color = "red")
+  ax[4, 1][:set_xlim](xrange)
+  ax[4, 1][:set_ylim](yrange)
+  ax[4, 1][:set_ylabel]("LATMO (" * L"$W/m^2$" * ")")
 
   latmo_error = mean(latmo_error, dims = 2)
 
-  ax[4][:annotate]("$(labels[4]) Bias = $(round(mean(latmo_error), digits = 1)) | RMSE = $(round(sqrt(mean(latmo_error.^2)), digits = 1))", xy = (0.05, 0.85), xycoords = "axes fraction")
+  ax[4, 1][:annotate]("(G) Bias = $(round(mean(latmo_error), digits = 1)) | RMSE = $(round(sqrt(mean(latmo_error.^2)), digits = 1))", xy = (0.05, 0.85), xycoords = "axes fraction")
   
-  savefig(joinpath(path_figure, "time_series_analysis_$(cfg)_$(metric).png"), dpi = 600)
+  ###############################################################################################
+
+  # Perform analysis for cfg = 32
+  
+  cfg = 32
+
+  # Load results
+
+  variable = "swe"
+
+  file_fine, file_coarse = results_files(cfg, variable)
+
+  swe_time, swe_fine, swe_coarse = load_fsm_data(file_fine, file_coarse, df_subset, variable)
+
+  variable = "hatmo"
+
+  file_fine, file_coarse = results_files(cfg, variable)
+  
+  hatmo_time, hatmo_fine, hatmo_coarse = load_fsm_data(file_fine, file_coarse, df_subset, variable)
+
+  variable = "latmo"
+
+  file_fine, file_coarse = results_files(cfg, variable)
+
+  latmo_time, latmo_fine, latmo_coarse = load_fsm_data(file_fine, file_coarse, df_subset, variable)
+
+  variable = "rnet"
+
+  file_fine, file_coarse = results_files(cfg, variable)
+
+  rnet_time, rnet_fine, rnet_coarse = load_fsm_data(file_fine, file_coarse, df_subset, variable)
+    
+  # Plot results
+  
+  ax[1, 2][:set_title]("Exchng = 1")
+
+  # SWE
+
+  swe_error = repeat(swe_coarse, 1, size(swe_fine, 2)) - swe_fine
+
+  ax[1, 2][:grid](axis = "x")
+  ax[1, 2][:fill_between](swe_time, minimum(swe_fine, dims=2)[:], maximum(swe_fine, dims=2)[:], color = "gray")
+  ax[1, 2][:plot](swe_time, swe_coarse, color = "blue")
+  ax[1, 2][:plot](swe_time, mean(swe_fine, dims=2)[:], color = "green")
+  ax[1, 2][:set_xlim](xrange)
+  ax[1, 2][:set_ylim](0, 2000)
+  ax[1, 2][:set_ylabel]("SWE (" * L"mm" * ")")
+
+  swe_error = mean(swe_error, dims = 2)
+
+  ax[1, 2][:annotate]("(B) Bias = $(round(mean(swe_error), digits = 0)) | RMSE = $(round(sqrt(mean(swe_error.^2)), digits = 0))", xy = (0.05, 0.85), xycoords = "axes fraction")
+
+  # RNET
+
+  rnet_error = repeat(rnet_coarse, 1, size(rnet_fine, 2)) - rnet_fine
+
+  ax[2, 2][:grid](axis = "x")
+  ax[2, 2][:fill_between](rnet_time, minimum(rnet_error, dims=2)[:], maximum(rnet_error, dims=2)[:], color="gray")
+  ax[2, 2][:plot](rnet_time, mean(rnet_error, dims=2), color = "red")
+  ax[2, 2][:set_xlim](xrange)
+  ax[2, 2][:set_ylim](yrange)
+  ax[2, 2][:set_ylabel]("RNET (" * L"$W/m^2$" * ")")
+
+  rnet_error = mean(rnet_error, dims = 2)
+
+  ax[2, 2][:annotate]("(D) Bias = $(round(mean(rnet_error), digits = 1)) | RMSE = $(round(sqrt(mean(rnet_error.^2)), digits = 1))", xy = (0.05, 0.85), xycoords = "axes fraction")
+
+  # HATMO
+
+  hatmo_error = repeat(hatmo_coarse, 1, size(hatmo_fine, 2)) - hatmo_fine
+
+  ax[3, 2][:grid](axis = "x")
+  ax[3, 2][:fill_between](hatmo_time, minimum(hatmo_error, dims=2)[:], maximum(hatmo_error, dims=2)[:], color="gray")
+  ax[3, 2][:plot](hatmo_time, mean(hatmo_error, dims=2), color = "red")
+  ax[3, 2][:set_xlim](xrange)
+  ax[3, 2][:set_ylim](yrange)
+  ax[3, 2][:set_ylabel]("HATMO (" * L"$W/m^2$" * ")")
+
+  hatmo_error = mean(hatmo_error, dims = 2)
+
+  ax[3, 2][:annotate]("(F) Bias = $(round(mean(hatmo_error), digits = 1)) | RMSE = $(round(sqrt(mean(hatmo_error.^2)), digits = 1))", xy = (0.05, 0.85), xycoords = "axes fraction")
+
+  # LATMO
+
+  latmo_error = repeat(latmo_coarse, 1, size(latmo_fine, 2)) - latmo_fine
+
+  ax[4, 2][:grid](axis = "x")
+  ax[4, 2][:fill_between](latmo_time, minimum(latmo_error, dims=2)[:], maximum(latmo_error, dims=2)[:], color="gray")
+  ax[4, 2][:plot](latmo_time, mean(latmo_error, dims=2), color = "red")
+  ax[4, 2][:set_xlim](xrange)
+  ax[4, 2][:set_ylim](yrange)
+  ax[4, 2][:set_ylabel]("LATMO (" * L"$W/m^2$" * ")")
+
+  latmo_error = mean(latmo_error, dims = 2)
+
+  ax[4, 2][:annotate]("(H) Bias = $(round(mean(latmo_error), digits = 1)) | RMSE = $(round(sqrt(mean(latmo_error.^2)), digits = 1))", xy = (0.05, 0.85), xycoords = "axes fraction")
+
+  # Save plot
+
+  savefig(joinpath(path_figure, "time_series_analysis_$(metric).pdf"), dpi = 600)
   
 end
 
@@ -374,13 +484,7 @@ for metric in ["rmse"] # ["bias_min", "bias_max", "rmse"]
 
   # Plot two configurations where only exchng differs
 
-  cfg = 30
-
-  plot_fms_results(cfg, df_subset, "Exchng = 0", path_figure, metric, ["(A)", "(C)", "(E)", "(G)"])
-
-  cfg = 32
-
-  plot_fms_results(cfg, df_subset, "Exchng = 1", path_figure, metric, ["(B)", "(D)", "(F)", "(H)"])
+  plot_fms_results(df_subset, path_figure, metric)
 
 
   # Plot sensible heat fluxes
