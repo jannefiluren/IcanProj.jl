@@ -1,4 +1,8 @@
 
+
+# Script for creating Figure 13 in scale manuscript
+
+
 using CSV
 using DataFrames
 using IcanProj
@@ -46,15 +50,15 @@ df_bias = DataFrame(swe = df_swe.r_swe_elev_for_bias,
 
 # Plot results
 
-fig = figure(figsize = (7, 3))
+fig = figure(figsize = (5, 2.7))
 
 boxplot(convert(Array{Float64}, df_rmse).^2, 0, "")
 ylim([0, 1])
 yticks(0:0.2:1)
-ylabel("Squared correlation coefficient")
+ylabel("Squared correlation\ncoefficient (-)")
 xticks(collect(1:4), uppercase.(String.(names(df_rmse))))
 
-savefig(joinpath(path_figure, "correlation_plot.png"), dpi = 600)
+savefig(joinpath(path_figure, "correlation_plot.pdf"), dpi = 600)
 
 
 # Print summary statistics
