@@ -1,3 +1,7 @@
+
+# Script for creating Figure 4 in scale manuscript
+
+
 using IcanProj
 using CSV
 using DataFrames
@@ -180,7 +184,7 @@ cfgs = cfg_table()
 
 fig, axes = plt[:subplots](nrows = 3, ncols = 2)
 
-fig[:set_size_inches](8, 7)
+fig[:set_size_inches](8, 6)
 
 fig[:text](0.04, 0.5, "Bias (%)", va="center", rotation="vertical")
 
@@ -267,7 +271,7 @@ axes[6][:annotate]("Albedo", xy=[0.03; 0.8], xycoords="axes fraction", fontsize=
 
 # Save figure
 
-savefig(joinpath(path_figure, "error_vs_parameterization.png"), dpi = 600)
+savefig(joinpath(path_figure, "error_vs_parameterization.pdf"), dpi = 600)
 
 
 
