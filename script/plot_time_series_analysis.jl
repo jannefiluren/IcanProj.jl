@@ -243,7 +243,7 @@ function plot_fsm_heat_fluxes(df_subset, metric, path_figure)
 
   ax[2][:annotate]("(B) Exchng = 1", xy = (0.05, 0.85), xycoords = "axes fraction")
 
-  fig[:text](0.02, 0.5, L"$Sensible heat flux (W/m^2)$", va="center", rotation="vertical")
+  fig[:text](0.02, 0.5, "Sensible heat flux (" * L"$W/m^2$" * ")", va="center", rotation="vertical")
 
   savefig(joinpath(path_figure, "sensible_heat_fluxes_$(metric).pdf"), dpi = 600)
 
