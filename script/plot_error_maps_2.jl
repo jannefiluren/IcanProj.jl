@@ -1,3 +1,7 @@
+
+# Script for creating Figure 10, 11, 12 in scale manuscript
+
+
 using IcanProj
 using Statistics
 using PyPlot
@@ -51,7 +55,7 @@ end
 
 # Global settings
 
-cfg = 30
+cfg = 32
 
 path_results = joinpath(dirname(pathof(IcanProj)), "..", "plots", "error_maps_2")
 
@@ -71,6 +75,7 @@ rmse_rnet, bias_rnet = compute_metrics(cfg, "rnet")
 
 py"""
 import matplotlib.pyplot as plt
+import numpy as np
 fig, ax = plt.subplots(2, 2, tight_layout=True, figsize = (8, 8))
 """
 
@@ -80,13 +85,13 @@ data_vec = data_map[~np.isnan(data_map)]
 
 map = ax[0,0].imshow(data_map) #, vmin = 0, vmax = 85)
 cb = fig.colorbar(map, ax=ax[0,0], fraction=0.046, pad=0.04)
-cb.set_label("RMSE ($mm$)")
-ax[0,0].annotate("(A) SWE", xy=(0.1,0.9), xycoords="axes fraction")
+cb.set_label("RMSE ($mm$)", size = 11)
+ax[0,0].annotate("(A) SWE", xy=(0.1,0.9), xycoords="axes fraction", fontsize = 12)
 ax[0,0].axis('off')
 inset_ax = ax[0,0].inset_axes([0.6, 0.15, 0.3, 0.3])
 inset_ax.hist(data_vec, density=True, bins=10, color="gray")
-inset_ax.tick_params(axis='both', which='major', labelsize=6)
-inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.tick_params(axis='both', which='major', labelsize=7)
+inset_ax.tick_params(axis='both', which='minor', labelsize=7)
 inset_ax.set_xlabel("RMSE ($mm$)", fontsize = 8)
 inset_ax.set_ylabel("Density (-)", fontsize = 8)
 """
@@ -97,13 +102,13 @@ data_vec = data_map[~np.isnan(data_map)]
 
 map = ax[0,1].imshow(data_map) #, vmin = 0, vmax = 2.8)
 cb = fig.colorbar(map, ax=ax[0,1], fraction=0.046, pad=0.04)
-cb.set_label("RMSE ($W/m^2$)")
-ax[0,1].annotate("(B) RNET", xy=(0.1,0.9), xycoords="axes fraction")
+cb.set_label("RMSE ($W/m^2$)", size = 11)
+ax[0,1].annotate("(B) RNET", xy=(0.1,0.9), xycoords="axes fraction", fontsize = 12)
 ax[0,1].axis('off')
 inset_ax = ax[0,1].inset_axes([0.6, 0.15, 0.3, 0.3])
 inset_ax.hist(data_vec, density=True, bins=10, color="gray")
-inset_ax.tick_params(axis='both', which='major', labelsize=6)
-inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.tick_params(axis='both', which='major', labelsize=7)
+inset_ax.tick_params(axis='both', which='minor', labelsize=7)
 inset_ax.set_xlabel("RMSE ($W/m^2$)", fontsize = 8)
 inset_ax.set_ylabel("Density (-)", fontsize = 8)
 """
@@ -114,13 +119,13 @@ data_vec = data_map[~np.isnan(data_map)]
 
 map = ax[1,0].imshow(data_map) #, vmin = 0, vmax = 2.8)
 cb = fig.colorbar(map, ax=ax[1,0], fraction=0.046, pad=0.04)
-cb.set_label("RMSE ($W/m^2$)")
-ax[1,0].annotate("(C) HATMO", xy=(0.1,0.9), xycoords="axes fraction")
+cb.set_label("RMSE ($W/m^2$)", size = 11)
+ax[1,0].annotate("(C) HATMO", xy=(0.1,0.9), xycoords="axes fraction", fontsize = 12)
 ax[1,0].axis('off')
 inset_ax = ax[1,0].inset_axes([0.6, 0.15, 0.3, 0.3])
 inset_ax.hist(data_vec, density=True, bins=10, color="gray")
-inset_ax.tick_params(axis='both', which='major', labelsize=6)
-inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.tick_params(axis='both', which='major', labelsize=7)
+inset_ax.tick_params(axis='both', which='minor', labelsize=7)
 inset_ax.set_xlabel("RMSE ($W/m^2$)", fontsize = 8)
 inset_ax.set_ylabel("Density (-)", fontsize = 8)
 """
@@ -131,19 +136,21 @@ data_vec = data_map[~np.isnan(data_map)]
 
 map = ax[1,1].imshow(data_map) #, vmin = 0, vmax = 2.8)
 cb = fig.colorbar(map, ax=ax[1,1], fraction=0.046, pad=0.04)
-cb.set_label("RMSE ($W/m^2$)")
-ax[1,1].annotate("(D) LATMO", xy=(0.1,0.9), xycoords="axes fraction")
+cb.set_label("RMSE ($W/m^2$)", size = 11)
+ax[1,1].annotate("(D) LATMO", xy=(0.1,0.9), xycoords="axes fraction", fontsize = 12)
 ax[1,1].axis('off')
 inset_ax = ax[1,1].inset_axes([0.6, 0.15, 0.3, 0.3])
 inset_ax.hist(data_vec, density=True, bins=10, color="gray")
-inset_ax.tick_params(axis='both', which='major', labelsize=6)
-inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.tick_params(axis='both', which='major', labelsize=7)
+inset_ax.tick_params(axis='both', which='minor', labelsize=7)
 inset_ax.set_xlabel("RMSE ($W/m^2$)", fontsize = 8)
 inset_ax.set_ylabel("Density (-)", fontsize = 8)
 """
 
+file_name = "maps_rmse_$(cfg).pdf"
+
 py"""
-plt.savefig($(joinpath(path_results, "maps_rmse.png")), dpi=300)
+plt.savefig($(joinpath(path_results, file_name)), dpi=600)
 plt.close()
 """
 
@@ -163,13 +170,13 @@ limit = np.max(np.abs(data_vec))
 
 map = ax[0,0].imshow(data_map, vmin = -limit, vmax = limit, cmap="jet")
 cb = fig.colorbar(map, ax=ax[0,0], fraction=0.046, pad=0.04)
-cb.set_label("Bias ($mm$)")
-ax[0,0].annotate("(A) SWE", xy=(0.1,0.9), xycoords="axes fraction")
+cb.set_label("Bias ($mm$)", size = 11)
+ax[0,0].annotate("(A) SWE", xy=(0.1,0.9), xycoords="axes fraction", fontsize = 12)
 ax[0,0].axis('off')
 inset_ax = ax[0,0].inset_axes([0.6, 0.15, 0.3, 0.3])
 inset_ax.hist(data_vec, density=True, bins=10, color="gray")
-inset_ax.tick_params(axis='both', which='major', labelsize=6)
-inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.tick_params(axis='both', which='major', labelsize=7)
+inset_ax.tick_params(axis='both', which='minor', labelsize=7)
 inset_ax.set_xlabel("Bias ($mm$)", fontsize = 8)
 inset_ax.set_ylabel("Density (-)", fontsize = 8)
 inset_ax.set_xlim(-limit, limit)
@@ -182,13 +189,13 @@ limit = np.max(np.abs(data_vec))
 
 map = ax[0,1].imshow(data_map, vmin = -limit, vmax = limit, cmap="jet")
 cb = fig.colorbar(map, ax=ax[0,1], fraction=0.046, pad=0.04)
-cb.set_label("Bias ($W/m^2$)")
-ax[0,1].annotate("(B) RNET", xy=(0.1,0.9), xycoords="axes fraction")
+cb.set_label("Bias ($W/m^2$)", size = 11)
+ax[0,1].annotate("(B) RNET", xy=(0.1,0.9), xycoords="axes fraction", fontsize = 12)
 ax[0,1].axis('off')
 inset_ax = ax[0,1].inset_axes([0.6, 0.15, 0.3, 0.3])
 inset_ax.hist(data_vec, density=True, bins=10, color="gray")
-inset_ax.tick_params(axis='both', which='major', labelsize=6)
-inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.tick_params(axis='both', which='major', labelsize=7)
+inset_ax.tick_params(axis='both', which='minor', labelsize=7)
 inset_ax.set_xlabel("Bias ($W/m^2$)", fontsize = 8)
 inset_ax.set_ylabel("Density (-)", fontsize = 8)
 inset_ax.set_xlim(-limit, limit)
@@ -201,13 +208,13 @@ limit = np.max(np.abs(data_vec))
 
 map = ax[1,0].imshow(data_map, vmin = -limit, vmax = limit, cmap="jet")
 cb = fig.colorbar(map, ax=ax[1,0], fraction=0.046, pad=0.04)
-cb.set_label("Bias ($W/m^2$)")
-ax[1,0].annotate("(C) HATMO", xy=(0.1,0.9), xycoords="axes fraction")
+cb.set_label("Bias ($W/m^2$)", size = 11)
+ax[1,0].annotate("(C) HATMO", xy=(0.1,0.9), xycoords="axes fraction", fontsize = 12)
 ax[1,0].axis('off')
 inset_ax = ax[1,0].inset_axes([0.6, 0.15, 0.3, 0.3])
 inset_ax.hist(data_vec, density=True, bins=10, color="gray")
-inset_ax.tick_params(axis='both', which='major', labelsize=6)
-inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.tick_params(axis='both', which='major', labelsize=7)
+inset_ax.tick_params(axis='both', which='minor', labelsize=7)
 inset_ax.set_xlabel("Bias ($W/m^2$)", fontsize = 8)
 inset_ax.set_ylabel("Density (-)", fontsize = 8)
 inset_ax.set_xlim(-limit, limit)
@@ -220,19 +227,21 @@ limit = np.max(np.abs(data_vec))
 
 map = ax[1,1].imshow(data_map, vmin = -limit, vmax = limit, cmap="jet")
 cb = fig.colorbar(map, ax=ax[1,1], fraction=0.046, pad=0.04)
-cb.set_label("Bias ($W/m^2$)")
-ax[1,1].annotate("(D) LATMO", xy=(0.1,0.9), xycoords="axes fraction")
+cb.set_label("Bias ($W/m^2$)", size = 11)
+ax[1,1].annotate("(D) LATMO", xy=(0.1,0.9), xycoords="axes fraction", fontsize = 12)
 ax[1,1].axis('off')
 inset_ax = ax[1,1].inset_axes([0.6, 0.15, 0.3, 0.3])
 inset_ax.hist(data_vec, density=True, bins=10, color="gray")
-inset_ax.tick_params(axis='both', which='major', labelsize=6)
-inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.tick_params(axis='both', which='major', labelsize=7)
+inset_ax.tick_params(axis='both', which='minor', labelsize=7)
 inset_ax.set_xlabel("Bias ($W/m^2$)", fontsize = 8)
 inset_ax.set_ylabel("Density (-)", fontsize = 8)
 inset_ax.set_xlim(-limit, limit)
 """
 
+file_name = "maps_bias_$(cfg).pdf"
+
 py"""
-plt.savefig($(joinpath(path_results, "maps_bias.png")), dpi=300)
+plt.savefig($(joinpath(path_results, file_name)), dpi=600)
 plt.close()
 """
