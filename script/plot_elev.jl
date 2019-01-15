@@ -1,4 +1,7 @@
 
+# Script for creating Figure 1 in scale manuscript
+
+
 using IcanProj
 using DataFrames
 using PyCall
@@ -126,7 +129,7 @@ vec_50km = df_50km.elev
 
 
 
-file = joinpath(figpath, "elevations.png")
+file = joinpath(figpath, "elevations.eps")
 
 py"""
 
@@ -139,13 +142,13 @@ fig.set_size_inches(12, 8)
 
 im = ax[0].imshow($(map_1km), cmap = 'jet', vmin = -0.1, vmax = 2301)
 ax[0].grid(linestyle='dotted')
-ax[0].annotate('(A) 1 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
+ax[0].annotate('(A) 1 km', xy = (0.1, 0.9), xycoords = 'axes fraction', fontsize = 12)
 ax[0].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
 
-inset_ax = ax[0].inset_axes([0.65, 0.15, 0.3, 0.3])
+inset_ax = ax[0].inset_axes([0.63, 0.15, 0.3, 0.3])
 inset_ax.hist($(vec_1km), bins=10, color="gray")
-inset_ax.tick_params(axis='both', which='major', labelsize=6)
-inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.tick_params(axis='both', which='major', labelsize=7)
+inset_ax.tick_params(axis='both', which='minor', labelsize=7)
 inset_ax.set_xlabel("Elevation ($m$)", fontsize = 8)
 inset_ax.set_ylabel("Count (-)", fontsize = 8)
 inset_ax.set_xlim(0, 2000)
@@ -158,13 +161,13 @@ cb.remove()
 
 im = ax[1].imshow($(map_10km), cmap = 'jet', vmin = -0.1, vmax = 2301)
 ax[1].grid(linestyle='dotted')
-ax[1].annotate('(B) 10 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
+ax[1].annotate('(B) 10 km', xy = (0.1, 0.9), xycoords = 'axes fraction', fontsize = 12)
 ax[1].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
 
-inset_ax = ax[1].inset_axes([0.65, 0.15, 0.3, 0.3])
+inset_ax = ax[1].inset_axes([0.63, 0.15, 0.3, 0.3])
 inset_ax.hist($(vec_10km), bins=10, color="gray")
-inset_ax.tick_params(axis='both', which='major', labelsize=6)
-inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.tick_params(axis='both', which='major', labelsize=7)
+inset_ax.tick_params(axis='both', which='minor', labelsize=7)
 inset_ax.set_xlabel("Elevation ($m$)", fontsize = 8)
 inset_ax.set_ylabel("Count (-)", fontsize = 8)
 inset_ax.set_xlim(0, 2000)
@@ -177,13 +180,13 @@ cb.remove()
 
 im = ax[2].imshow($(map_50km), cmap = 'jet', vmin = -0.1, vmax = 2301)
 ax[2].grid(linestyle='dotted')
-ax[2].annotate('(C) 50 km', xy = (0.1, 0.9), xycoords = 'axes fraction')
+ax[2].annotate('(C) 50 km', xy = (0.1, 0.9), xycoords = 'axes fraction', fontsize = 12)
 ax[2].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
 
-inset_ax = ax[2].inset_axes([0.65, 0.15, 0.3, 0.3])
+inset_ax = ax[2].inset_axes([0.63, 0.15, 0.3, 0.3])
 inset_ax.hist($(vec_50km), bins=10, color="gray")
-inset_ax.tick_params(axis='both', which='major', labelsize=6)
-inset_ax.tick_params(axis='both', which='minor', labelsize=6)
+inset_ax.tick_params(axis='both', which='major', labelsize=7)
+inset_ax.tick_params(axis='both', which='minor', labelsize=7)
 inset_ax.set_xlabel("Elevation ($m$)", fontsize = 8)
 inset_ax.set_ylabel("Count (-)", fontsize = 8)
 inset_ax.set_xlim(0, 2000)
