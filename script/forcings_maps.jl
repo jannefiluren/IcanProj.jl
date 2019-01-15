@@ -1,3 +1,7 @@
+
+# Script for creating Figure 2 and 3 in scale manuscript
+
+
 using IcanProj
 using NetCDF
 using DataFrames
@@ -38,7 +42,7 @@ map_wind = project_results(df_all, :wind_mean)
 
 map_tair = project_results(df_all, :tair_mean)
 
-file = joinpath(figpath, "forcings_mean.png")
+file = joinpath(figpath, "forcings_mean.pdf")
 
 py"""
 import matplotlib.pyplot as plt
@@ -55,7 +59,7 @@ im = ax[0].imshow($(map_prec), cmap = 'jet', vmin=-0.1, vmax=4000)
 
 ax[0].grid(linestyle='dotted')
 ax[0].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
-ax[0].annotate("(A)", xy=(0.1,0.85), xycoords="axes fraction")
+ax[0].annotate("(A)", xy=(0.05,0.90), xycoords="axes fraction", fontsize = 14)
 
 divider = make_axes_locatable(ax[0])
 cax = divider.new_vertical(size="5%", pad=0.05, pack_start=True)
@@ -68,7 +72,7 @@ im = ax[1].imshow($(map_wind), cmap = 'jet', vmin=-0.1, vmax=9)
 
 ax[1].grid(linestyle='dotted')
 ax[1].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
-ax[1].annotate("(B)", xy=(0.1,0.85), xycoords="axes fraction")
+ax[1].annotate("(B)", xy=(0.05,0.90), xycoords="axes fraction", fontsize = 14)
 
 divider = make_axes_locatable(ax[1])
 cax = divider.new_vertical(size="5%", pad=0.05, pack_start=True)
@@ -81,7 +85,7 @@ im = ax[2].imshow($(map_tair), cmap = 'jet', vmin=-9, vmax=9)
 
 ax[2].grid(linestyle='dotted')
 ax[2].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
-ax[2].annotate("(C)", xy=(0.1,0.85), xycoords="axes fraction")
+ax[2].annotate("(C)", xy=(0.05,0.90), xycoords="axes fraction", fontsize = 14)
 
 divider = make_axes_locatable(ax[2])
 cax = divider.new_vertical(size="5%", pad=0.05, pack_start=True)
@@ -124,7 +128,7 @@ wind_max = maximum(df_50km.wind_std[.!isnan.(df_50km.wind_std)])
 
 tair_max = maximum(df_50km.tair_std[.!isnan.(df_50km.tair_std)])
 
-file = joinpath(figpath, "forcings_std.png")
+file = joinpath(figpath, "forcings_std.pdf")
 
 py"""
 import matplotlib.pyplot as plt
@@ -141,7 +145,7 @@ im = ax[0,0].imshow($(prec_10km), cmap = 'jet', vmin=-0.1, vmax=$(prec_max))
 
 ax[0,0].grid(linestyle='dotted')
 ax[0,0].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
-ax[0,0].annotate("(A)", xy=(0.1,0.85), xycoords="axes fraction")
+ax[0,0].annotate("(A)", xy=(0.05,0.90), xycoords="axes fraction", fontsize = 14)
 
 divider = make_axes_locatable(ax[0,0])
 cax = divider.new_vertical(size="5%", pad=0.05, pack_start=True)
@@ -156,7 +160,7 @@ im = ax[1,0].imshow($(prec_50km), cmap = 'jet', vmin=-0.1, vmax=$(prec_max))
 
 ax[1,0].grid(linestyle='dotted')
 ax[1,0].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
-ax[1,0].annotate("(D)", xy=(0.1,0.85), xycoords="axes fraction")
+ax[1,0].annotate("(D)", xy=(0.05,0.90), xycoords="axes fraction", fontsize = 14)
 
 divider = make_axes_locatable(ax[1,0])
 cax = divider.new_vertical(size="5%", pad=0.05, pack_start=True)
@@ -169,7 +173,7 @@ im = ax[0,1].imshow($(wind_10km), cmap = 'jet', vmin=-0.1, vmax=$(wind_max))
 
 ax[0,1].grid(linestyle='dotted')
 ax[0,1].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
-ax[0,1].annotate("(B)", xy=(0.1,0.85), xycoords="axes fraction")
+ax[0,1].annotate("(B)", xy=(0.05,0.90), xycoords="axes fraction", fontsize = 14)
 
 divider = make_axes_locatable(ax[0,1])
 cax = divider.new_vertical(size="5%", pad=0.05, pack_start=True)
@@ -183,7 +187,7 @@ im = ax[1,1].imshow($(wind_50km), cmap = 'jet', vmin=-0.1, vmax=$(wind_max))
 
 ax[1,1].grid(linestyle='dotted')
 ax[1,1].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
-ax[1,1].annotate("(E)", xy=(0.1,0.85), xycoords="axes fraction")
+ax[1,1].annotate("(E)", xy=(0.05,0.90), xycoords="axes fraction", fontsize = 14)
 
 divider = make_axes_locatable(ax[1,1])
 cax = divider.new_vertical(size="5%", pad=0.05, pack_start=True)
@@ -196,7 +200,7 @@ im = ax[0,2].imshow($(tair_10km), cmap = 'jet', vmin=-0.1, vmax=$(tair_max))
 
 ax[0,2].grid(linestyle='dotted')
 ax[0,2].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
-ax[0,2].annotate("(C)", xy=(0.1,0.85), xycoords="axes fraction")
+ax[0,2].annotate("(C)", xy=(0.05,0.90), xycoords="axes fraction", fontsize = 14)
 
 divider = make_axes_locatable(ax[0,2])
 cax = divider.new_vertical(size="5%", pad=0.05, pack_start=True)
@@ -210,7 +214,7 @@ im = ax[1,2].imshow($(tair_50km), cmap = 'jet', vmin=-0.1, vmax=$(tair_max))
 
 ax[1,2].grid(linestyle='dotted')
 ax[1,2].tick_params(axis='both', left=False, top=False, right=False, bottom=False, labelleft=False, labeltop=False, labelright=False, labelbottom=False)
-ax[1,2].annotate("(F)", xy=(0.1,0.85), xycoords="axes fraction")
+ax[1,2].annotate("(F)", xy=(0.05,0.90), xycoords="axes fraction", fontsize = 14)
 
 divider = make_axes_locatable(ax[1,2])
 cax = divider.new_vertical(size="5%", pad=0.05, pack_start=True)
