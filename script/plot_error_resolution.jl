@@ -1,3 +1,8 @@
+
+# Script for creating Figure 6, 7, 8, 9 in scale manuscript
+
+
+
 using IcanProj
 using DataFrames
 using JFSM2
@@ -104,7 +109,7 @@ resolutions = [1, 5, 10, 25, 50]
 py"""
 import matplotlib.pyplot as plt
 
-fig, ax = plt.subplots(1, 2, figsize=(8, 3.5), tight_layout = True)
+fig, ax = plt.subplots(1, 2, figsize=(7, 3.5), tight_layout = True)
 
 ax[0].plot($resolutions, $(data_rmse[:, exchng_0]), color = 'red', label = 'Option 0')
 ax[0].plot($resolutions, $(data_rmse[:, exchng_1]), color = 'blue', label = 'Option 1', linestyle = '--')
@@ -114,7 +119,7 @@ ax[0].set_ylabel($ylabel_left)
 ax[0].set_xticks($resolutions)
 ax[0].set_xlabel("Resolution (km)")
 
-ax[0].annotate("(A)", xy=[0.1, 0.8], xycoords='axes fraction', fontsize=12)
+ax[0].annotate("(A)", xy=[0.05, 0.9], xycoords='axes fraction', fontsize=12)
 
 ax[1].plot($resolutions, $(data_bias[:, exchng_0]), color = 'red', label = 'Option 0')
 ax[1].plot($resolutions, $(data_bias[:, exchng_1]), color = 'blue', label = 'Option 1', linestyle = '--')
@@ -128,11 +133,11 @@ ax[1].set_ylabel($ylabel_right)
 ax[1].set_xticks($resolutions)
 ax[1].set_xlabel("Resolution (km)")
 
-ax[1].annotate("(B)", xy=[0.1, 0.8], xycoords='axes fraction', fontsize=12)
+ax[1].annotate("(B)", xy=[0.05, 0.9], xycoords='axes fraction', fontsize=12)
 
 plt.show()
 
-plt.savefig($(joinpath(pathfig, "$(variable).png")), dpi = 600)
+plt.savefig($(joinpath(pathfig, "$(variable).pdf")), dpi = 600)
 """
 
     return nothing

@@ -1,3 +1,8 @@
+
+# Script for creating Figure 5 in scale manuscript
+
+
+
 using IcanProj
 using DataFrames
 using JFSM2
@@ -110,7 +115,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
-fig, ax = plt.subplots(2, 2, figsize=(6,6)) 
+fig, ax = plt.subplots(2, 2, figsize=(8,8)) 
 
 cmap, norm = mcolors.from_levels_and_colors([-100, 0.5, 100], ['red', 'blue'])
 
@@ -195,7 +200,7 @@ ax[1,1].set_title("LATMO")
 
 # Save figure
 
-figname = joinpath(dirname(pathof(IcanProj)), "..", "plots", "rank", "ranking_50km.png")
+figname = joinpath(dirname(pathof(IcanProj)), "..", "plots", "rank", "ranking_50km.pdf")
 
 py"""
 plt.show()
