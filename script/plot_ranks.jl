@@ -90,6 +90,8 @@ function ranking_of_options(resall, variable, measure)
 
     xtext = uppercase.(string.(names(df_cfg)))
     
+    xtext[2] = "HYDRAUL" 
+
     ytext = collect(1:2:32)
     
     return mat_cfg, xtext, ytext
@@ -203,7 +205,7 @@ ax[1,1].set_title("LATMO")
 figname = joinpath(dirname(pathof(IcanProj)), "..", "plots", "rank", "ranking_50km.pdf")
 
 py"""
-plt.show()
+#plt.show()
 plt.savefig($figname, dpi=200, bbox_inches='tight')
 plt.close()
 """

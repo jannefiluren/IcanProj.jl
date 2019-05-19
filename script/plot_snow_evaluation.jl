@@ -190,7 +190,7 @@ fig[:text](0.04, 0.5, "Bias (%)", va="center", rotation="vertical")
 
 fig[:text](1-0.04, 0.5, "NRMSE (-)", va="center", rotation="vertical")
 
-fig[:text](0.5, 0.04, "Parameterization option", ha = "center")
+fig[:text](0.5, 0.04, "Parametrization option", ha = "center")
 
 
 # Bias for snow water equivalent
@@ -213,7 +213,7 @@ axes[2][:boxplot]([variable[explanation .== 0] variable[explanation .== 1]])
 
 axes[2][:xaxis][:set_ticklabels]([])
 
-axes[2][:annotate]("Hydrol", xy=[0.03; 0.8], xycoords="axes fraction", fontsize=10.0)
+axes[2][:annotate]("Hydraul", xy=[0.03; 0.8], xycoords="axes fraction", fontsize=10.0)
 
 
 explanation = cfgs.albedo
@@ -253,7 +253,7 @@ axes[5][:yaxis][:tick_right]()
 
 axes[5][:yaxis][:set_label_position]("right")
 
-axes[5][:annotate]("Hydrol", xy=[0.03; 0.8], xycoords="axes fraction", fontsize=10.0)
+axes[5][:annotate]("Hydraul", xy=[0.03; 0.8], xycoords="axes fraction", fontsize=10.0)
 
 
 explanation = cfgs.albedo
