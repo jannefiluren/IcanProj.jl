@@ -55,7 +55,7 @@ end
 
 # Global settings
 
-cfg = 32
+cfg = 30
 
 path_results = joinpath(dirname(pathof(IcanProj)), "..", "plots", "error_maps_2")
 
@@ -85,14 +85,14 @@ data_vec = data_map[~np.isnan(data_map)]
 
 map = ax[0,0].imshow(data_map) #, vmin = 0, vmax = 85)
 cb = fig.colorbar(map, ax=ax[0,0], fraction=0.046, pad=0.04)
-cb.set_label("RMSE ($mm$)", size = 11)
+cb.set_label("RMSE ($kg/m^2$)", size = 11)
 ax[0,0].annotate("(A) SWE", xy=(0.1,0.9), xycoords="axes fraction", fontsize = 12)
 ax[0,0].axis('off')
 inset_ax = ax[0,0].inset_axes([0.6, 0.15, 0.3, 0.3])
 inset_ax.hist(data_vec, density=True, bins=10, color="gray")
 inset_ax.tick_params(axis='both', which='major', labelsize=7)
 inset_ax.tick_params(axis='both', which='minor', labelsize=7)
-inset_ax.set_xlabel("RMSE ($mm$)", fontsize = 8)
+inset_ax.set_xlabel("RMSE ($kg/m^2$)", fontsize = 8)
 inset_ax.set_ylabel("Density (-)", fontsize = 8)
 """
 
@@ -170,14 +170,14 @@ limit = np.max(np.abs(data_vec))
 
 map = ax[0,0].imshow(data_map, vmin = -limit, vmax = limit, cmap="jet")
 cb = fig.colorbar(map, ax=ax[0,0], fraction=0.046, pad=0.04)
-cb.set_label("Bias ($mm$)", size = 11)
+cb.set_label("Bias ($kg/m^2$)", size = 11)
 ax[0,0].annotate("(A) SWE", xy=(0.1,0.9), xycoords="axes fraction", fontsize = 12)
 ax[0,0].axis('off')
 inset_ax = ax[0,0].inset_axes([0.6, 0.15, 0.3, 0.3])
 inset_ax.hist(data_vec, density=True, bins=10, color="gray")
 inset_ax.tick_params(axis='both', which='major', labelsize=7)
 inset_ax.tick_params(axis='both', which='minor', labelsize=7)
-inset_ax.set_xlabel("Bias ($mm$)", fontsize = 8)
+inset_ax.set_xlabel("Bias ($kg/m^2$)", fontsize = 8)
 inset_ax.set_ylabel("Density (-)", fontsize = 8)
 inset_ax.set_xlim(-limit, limit)
 """

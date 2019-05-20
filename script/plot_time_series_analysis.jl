@@ -307,7 +307,7 @@ function plot_fms_results(df_subset, path_figure, metric)
   ax[1, 1][:plot](swe_time, mean(swe_fine, dims=2)[:], color = "green")
   ax[1, 1][:set_xlim](xrange)
   ax[1, 1][:set_ylim](0, 2000)
-  ax[1, 1][:set_ylabel]("SWE (" * L"mm" * ")")
+  ax[1, 1][:set_ylabel]("SWE (" * L"$kg/m^2$" * ")")
 
   swe_error = mean(swe_error, dims = 2)
 
@@ -404,7 +404,7 @@ function plot_fms_results(df_subset, path_figure, metric)
   ax[1, 2][:plot](swe_time, mean(swe_fine, dims=2)[:], color = "green")
   ax[1, 2][:set_xlim](xrange)
   ax[1, 2][:set_ylim](0, 2000)
-  ax[1, 2][:set_ylabel]("SWE (" * L"mm" * ")")
+  ax[1, 2][:set_ylabel]("SWE (" * L"$kg/m^2$" * ")")
 
   swe_error = mean(swe_error, dims = 2)
 

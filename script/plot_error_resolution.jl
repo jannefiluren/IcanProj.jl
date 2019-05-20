@@ -158,7 +158,7 @@ variable = "swe"
 
 resall = compute_error_all(pathres, variable)
 
-plot_error_scales(resall, variable, "RMSE (\$mm\$)", "MAB (\$mm\$)")
+plot_error_scales(resall, variable, "RMSE (\$kg/m^2\$)", "MAB (\$kg/m^2\$)")
 
 
 # Net radiation
